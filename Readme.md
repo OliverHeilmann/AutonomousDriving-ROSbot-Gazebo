@@ -24,7 +24,7 @@ Some words...
 4) gcc 9.3.0
 5) Ubuntu 20.04
 
-## Necessary Extensions
+## Necessary VS Code Extensions
 1) C/C++
 2) C++ Intellisense
 3) catkin-tools
