@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<launch>
+
+  <param name="robot_description" command="$(find xacro)/xacro '$(find rosbot_bath)/urdf/rosbot.xacro'"/>
+
+  <!-- Show in Rviz   -->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find rosbot_bath)/rviz/rob_rosbot.rviz" required="true" output="screen"/>
+
+</launch>

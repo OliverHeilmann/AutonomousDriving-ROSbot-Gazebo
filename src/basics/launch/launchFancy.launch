@@ -1,0 +1,23 @@
+<launch>
+<!-- RUN WITH roslaunch launchFancy.launch timeDelay:=7 -->
+
+<!-- Declare arg to be passed in -->
+<arg name="timeDelay" />
+
+<!-- Week 4 Lab Scripts -->
+<node name="lab4_action_server" pkg="basics"
+type="fancy_action_server.py" />
+
+<node name="lab4_action_client" pkg="basics"
+type="fancy_action_client.py"
+args="$(arg timeDelay)" output="screen" />
+
+<!-- Week 3 Lab Scripts-->
+<node name="lab_publisher" pkg="basics"
+type="topic_publisher.py" />
+
+<node name="lab3_subscriber" pkg="basics"
+type="topic_subscriber.py"
+args="Some String" output="screen" />
+
+</launch>

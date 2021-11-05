@@ -1,0 +1,23 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "",
+        "limitSymbolsToIncludedHeaders": true
+      },
+      "includePath": [
+        "/home/heilmao/ros_workspace/devel/include/**",
+        "/opt/ros/noetic/include/**",
+        "/usr/include/**",
+        "/home/heilmao/ros_workspace/**",
+        "${workspaceFolder}/**"
+      ],
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/g++",
+      "name": "ROS",
+      "cStandard": "c11",
+      "cppStandard": "c++17"
+    }
+  ],
+  "version": 4
+}
