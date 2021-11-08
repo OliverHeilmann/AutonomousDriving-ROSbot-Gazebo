@@ -1,1 +1,1 @@
-print("Python should work now!")
+print("Python coding and debugging should work now!")

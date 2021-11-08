@@ -1,6 +1,8 @@
 # Description
 This repository contains all the relevant configurations which a user will need for successfully setting up ROS, C++ and Python (with debugging) on Visual Studio Code. Versions shown below:
 
+# Prerequisite Installs and Setup
+
 ## Setting Up 'c_cpp_properties.json'
 Some words...
 
