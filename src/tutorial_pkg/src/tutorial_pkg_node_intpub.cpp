@@ -2,6 +2,8 @@
 #include "std_msgs/Int32.h"
 #include <sstream>
 
+using namespace std;
+
 int main(int argc, char **argv)
 {
     //Creating the talker topic
@@ -23,7 +25,7 @@ int main(int argc, char **argv)
         //Converts the stringsteam into a msg
         msg.data = count;
         //Ros debug
-        //ROS_INFO("%s", msg.data);
+        ROS_INFO("%s",std::to_string(msg.data).c_str());
         //Publish the message
         chatter_pub.publish(msg);
         //Sleeps for remaining time

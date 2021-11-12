@@ -5,11 +5,15 @@
 int main(int argc, char **argv)
 {
     //Creating the node called talker
-    ros::init(argc, argv, "talker");
+    ros::init(argc, argv, "talker");    // 'talker' is the name of this node!
+    
     //Interface for creating nodes,
-    ros::NodeHandle n("~");
+    // IMPORTANT! if you write 'ros::NodeHandle n' by itself then the topic will only publish
+    // to /chatter rather than /talker/chatter. This was the issue in the lab.
+    ros::NodeHandle n("~"); 
+
     //Creates a Publisher node on the  chatter topic
-    ros::Publisher chatter_pub = n.advertise<std_msgs::String>("chatter", 1000);
+    ros::Publisher chatter_pub = n.advertise<std_msgs::String>("chatter", 1000);    // 'chatter' is the topic!
     //Loops at 10hz
     ros::Rate loop_rate(10);
     int count = 0;
