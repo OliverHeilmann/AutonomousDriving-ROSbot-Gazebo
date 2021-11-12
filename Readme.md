@@ -1,24 +1,9 @@
 # Description
-This repository contains all the relevant configurations which a user will need for successfully setting up ROS, C++ and Python (with debugging) on Visual Studio Code. Versions shown below:
+This repository contains all the relevant configurations which a user will need for successfully setting up ROS, C++ and Python (with debugging) on Visual Studio Code. VS Code provides users with debugging and syntax suggestions/ support as well as github and ROS environment making it a powerful and effective tool for robotics software development.
 
 # Prerequisite Installs and Setup
+Before going throught the VS Code configuration steps, the user should install the following versions of the below (or similar, read documentation if unclear).
 
-## Setting Up 'c_cpp_properties.json'
-Some words...
-
-## Setting Up 'launch.json'
-Some words... Mention python warning being due to vscode support, adding custom extension to support variable name...
-
-## Setting Up 'settings.json'
-Some words...
-
-## Setting Up 'task.json'
-Some words...
-
-# Using ROS in VS Code
-Some words...
-
-# Additional Information
 ## Versions
 1) ROS Noetic
 2) Python 3.8.10
@@ -36,10 +21,59 @@ Some words...
 7) ROS
 8) Command Variable
 
+## ROS Packages
+```text
+sudo apt-get update
+
+# Install Additional ROS Packages
+sudo apt-get install -y ros-noetic-slam-gmapping ros-noetic-
+controller-manager ros-noetic-joint-state-controller ros-noetic-
+gazebo-ros*
+
+sudo apt-get install ros-noetic-teleop-twist-keyboard
+
+source <PATH TO YOUR ROS WORKSPACE>/devel/setup.bash
+```
+__IMPORTANT!!__ Note that your ROS workspace (where you call the source command to) is the directory which you should open in VS Code. For example, my workspace is called '_ros_workspace_' so I use the command 'source ros_workspace/devel/setup.bash' to point ROS to my 'setup.bash' file. Note that this file will not be visible until you build the directory yourself using _catkin_init_workspace_ and _catkin_make_.
+
+## Setting Up 'c_cpp_properties.json'
+Change the following section of your json file to account your relevant directories:
+```text
+    "includePath": [
+        "/home/heilmao/ros_workspace/devel/include/**",
+        "/opt/ros/noetic/include/**",
+        "/usr/include/**",
+        "/home/heilmao/ros_workspace/**",
+        "${workspaceFolder}/**"
+    ],
+```
+
+## Setting Up 'launch.json'
+Simply use the launch file provided. Note that the python version referenced in the script my have a warning associated with it. This is a bug with the current version of VS Code- simply ignore it and the debugging will run as normal.
+
+## Setting Up 'settings.json'
+Replace with relevant paths to your equivalent files.
+
+## Setting Up 'task.json'
+Copy and paste the contents of the task.json file into your '.vscode' directory as shown in this code repository if it does not already appear.
+
+# Using ROS in VS Code
+## Building ROS, VS Code Environment
+You can now run CTRL+SHIFT+P, search for "Tasks: Run Task" and select the "ROS: catkinmake" task we configured. Since we set it to be the default build task with the group option you can also run that task with the shortcut CTRL+SHIFT+B. The build type is set to "Debug", so that the ROS nodes can be debugged later on.
+
+## General Usage
+Before running your ROS project, users should start _roscore_. Do this by pressing Ctrl+Shift+p and then selecting the ROS:Start option.
+
+Program in Python and C++ as normal using VS Code. Running these projects should be done with the ROS launch files and/or shell scripts. See the 'Useful Commands 
+
+When users wish to debug their code, they should navigate to the 'Run and Debug' tab on the left of the window. At the top, you will see two options in a dropdown box; select between Python and C++ depending on your requirement.
+
 ## Useful Commands
+
 ### VS Code
 ```text
-Ctrl + Shift + p
+Ctrl + Shift + p    # run task
+Ctrl + Shift + b    # build project
 ```
 
 ### Terminal
@@ -54,3 +88,4 @@ catkin_make
 2) https://vitux.com/how-to-use-gdb-to-debug-programs-in-ubuntu/
 3) https://github.com/ms-iot/vscode-ros/blob/master/doc/spec/debug-ros-nodes.md
 4) https://code.visualstudio.com/docs/editor/variables-reference
+5) http://wiki.ros.org/noetic/Installation/Ubuntu
