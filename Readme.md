@@ -5,11 +5,11 @@ This repository contains all the relevant configurations which a user will need 
 Before going throught the VS Code configuration steps, the user should install the following versions of the below (or similar, read documentation if unclear).
 
 ## Versions
-1) ROS Noetic
+1) ROS Noetic (see 'Setting Up Ubuntu and ROS')
 2) Python 3.8.10
 3) cmake version 3.16.3
 4) gcc 9.3.0
-5) Ubuntu 20.04
+5) Ubuntu 20.04 (see 'Setting Up Ubuntu and ROS')
 
 ## Necessary VS Code Extensions
 1) C/C++
@@ -18,10 +18,20 @@ Before going throught the VS Code configuration steps, the user should install t
 4) CMake
 5) Github Pull Requests
 6) Python
-7) ROS
+7) ROS (see 'Setting Up Ubuntu and ROS')
 8) Command Variable
 
-## ROS Packages
+# Setting Up Ubuntu and ROS
+## Install Ubuntu Virtual Machine
+Follow these tutorials:
+1) https://mac.getutm.app 
+2) https://mac.getutm.app/gallery/ubuntu-20-04
+
+## Install ROS
+Follow this tutorial:
+1) http://wiki.ros.org/noetic/Installation/Ubuntu
+
+Now install the following packages:
 ```text
 sudo apt-get update
 
@@ -36,6 +46,18 @@ source <PATH TO YOUR ROS WORKSPACE>/devel/setup.bash
 ```
 __IMPORTANT!!__ Note that your ROS workspace (where you call the source command to) is the directory which you should open in VS Code. For example, my workspace is called '_ros_workspace_' so I use the command 'source ros_workspace/devel/setup.bash' to point ROS to my 'setup.bash' file. Note that this file will not be visible until you build the directory yourself using _catkin_init_workspace_ and _catkin_make_.
 
+## Clipboard and Directory Sharing with UTM:
+1. Follow instructions till last step here: https://mac.getutm.app/gallery/ubuntu-20-04
+2. Find Shared Directory in UTM navigator, choose your directory to share (make sure Ubuntu instance is shut off)
+3. Boot up Ubuntu and run the following commands:
+4. cd Documents && mkdir VMShare && cd VMShare
+5. sudo apt-get install davfs2
+6. sudo mount -t http://127.0.0.1:9843/ davfs ~/Documents/VMShare (now you should see your shared folder)
+7. sudo nano ~/.bashrc
+8. echo <Ubuntu Password> | sudo -S mount -t davfs http://127.0.0.1:9843/ ~/Documents/VMShare -o username=<Host Machine Username>
+
+
+# Setting Up ROS and Visual Studio Code
 ## Setting Up 'c_cpp_properties.json'
 Change the following section of your json file to account your relevant directories:
 ```text
