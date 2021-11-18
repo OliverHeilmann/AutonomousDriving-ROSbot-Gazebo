@@ -129,6 +129,7 @@ catkin_make
 2) https://mac.getutm.app/gallery/ubuntu-20-04
 3) http://www.lib4dev.in/info/MrGnomes/VS_Code_ROS/i19793
 4) https://vitux.com/how-to-use-gdb-to-debug-programs-in-ubuntu/
-5) https://github.com/ms-iot/vscode-ros/blob/master/doc/spec/debug-ros-nodes.md
-6) https://code.visualstudio.com/docs/editor/variables-reference
-7) http://wiki.ros.org/noetic/Installation/Ubuntu
+5) https://code.visualstudio.com/download
+6) https://github.com/ms-iot/vscode-ros/blob/master/doc/spec/debug-ros-nodes.md
+7) https://code.visualstudio.com/docs/editor/variables-reference
+8) http://wiki.ros.org/noetic/Installation/Ubuntu
