@@ -74,9 +74,20 @@ sudo mount -t http://127.0.0.1:9843/ davfs ~/Documents/VMShare (now you should s
 sudo nano ~/.bashrc
 echo <Ubuntu Password> | sudo -S mount -t davfs http://127.0.0.1:9843/ ~/Documents/VMShare -o username=<Host Machine Username>
 ```
+# Installing Xmonad
+Follow the following commands and then reboot. User should have the choice to boot into xmonad during login.
+```text
+start by updating your apt package database:
+sudo apt-get update
 
+to install Gnome:
+sudo apt install ubuntu-gnome-desktop
 
-# Setting Up ROS and Visual Studio Code
+#nNext install the xmonad window manager:
+sudo apt install xmonad
+```
+
+# Setting Up ROS with Visual Studio Code
 ## Setting Up 'c_cpp_properties.json'
 Change the following section of your json file to account your relevant directories:
 ```text
