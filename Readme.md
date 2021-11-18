@@ -30,6 +30,14 @@ Follow these tutorials:
 ## Install ROS
 Follow this tutorial:
 1) http://wiki.ros.org/noetic/Installation/Ubuntu
+2) Run the following commands
+```text 
+# add to bashrc to add workspace to source
+sudo nano ~/.bashrc
+
+# add the below to the bottom of your bashrc
+source <PATH TO YOUR ROS WORKSPACE>/devel/setup.bash
+```
 
 Now install the following packages:
 ```text
@@ -40,21 +48,31 @@ sudo apt-get install -y ros-noetic-slam-gmapping ros-noetic-
 controller-manager ros-noetic-joint-state-controller ros-noetic-
 gazebo-ros*
 
+# monitoring keyboard package
 sudo apt-get install ros-noetic-teleop-twist-keyboard
 
+# reminder that the below is the command to source to workspace
 source <PATH TO YOUR ROS WORKSPACE>/devel/setup.bash
 ```
+
 __IMPORTANT!!__ Note that your ROS workspace (where you call the source command to) is the directory which you should open in VS Code. For example, my workspace is called '_ros_workspace_' so I use the command 'source ros_workspace/devel/setup.bash' to point ROS to my 'setup.bash' file. Note that this file will not be visible until you build the directory yourself using _catkin_init_workspace_ and _catkin_make_.
 
 ## Clipboard and Directory Sharing with UTM:
 1. Follow instructions till last step here: https://mac.getutm.app/gallery/ubuntu-20-04
 2. Find Shared Directory in UTM navigator, choose your directory to share (make sure Ubuntu instance is shut off)
 3. Boot up Ubuntu and run the following commands:
-4. cd Documents && mkdir VMShare && cd VMShare
-5. sudo apt-get install davfs2
-6. sudo mount -t http://127.0.0.1:9843/ davfs ~/Documents/VMShare (now you should see your shared folder)
-7. sudo nano ~/.bashrc
-8. echo <Ubuntu Password> | sudo -S mount -t davfs http://127.0.0.1:9843/ ~/Documents/VMShare -o username=<Host Machine Username>
+```text
+# make directories
+cd Documents && mkdir VMShare && cd VMShare
+
+# install docking package, then mount
+sudo apt-get install davfs2
+sudo mount -t http://127.0.0.1:9843/ davfs ~/Documents/VMShare (now you should see your shared folder)
+
+# add command to bashrc file
+sudo nano ~/.bashrc
+echo <Ubuntu Password> | sudo -S mount -t davfs http://127.0.0.1:9843/ ~/Documents/VMShare -o username=<Host Machine Username>
+```
 
 
 # Setting Up ROS and Visual Studio Code
