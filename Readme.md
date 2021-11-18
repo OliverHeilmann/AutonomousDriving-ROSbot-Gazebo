@@ -74,7 +74,7 @@ sudo mount -t http://127.0.0.1:9843/ davfs ~/Documents/VMShare (now you should s
 sudo nano ~/.bashrc
 echo <Ubuntu Password> | sudo -S mount -t davfs http://127.0.0.1:9843/ ~/Documents/VMShare -o username=<Host Machine Username>
 ```
-# Installing Xmonad
+## Installing Xmonad
 Follow the following commands and then reboot. User should have the choice to boot into xmonad during login.
 ```text
 start by updating your apt package database:
