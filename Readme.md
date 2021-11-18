@@ -67,6 +67,7 @@ cd Documents && mkdir VMShare && cd VMShare
 
 # install docking package, then mount
 sudo apt-get install davfs2
+sudo apt install spice-vdagent spice-webdavd
 sudo mount -t http://127.0.0.1:9843/ davfs ~/Documents/VMShare (now you should see your shared folder)
 
 # add command to bashrc file
