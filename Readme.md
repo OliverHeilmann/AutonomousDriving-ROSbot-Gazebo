@@ -51,6 +51,9 @@ gazebo-ros*
 # monitoring keyboard package
 sudo apt-get install ros-noetic-teleop-twist-keyboard
 
+# catkin dependencies
+sudo apt install python3-rosdep
+
 # install catkin
 sudo apt-get install catkin
 
