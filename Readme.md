@@ -51,6 +51,9 @@ gazebo-ros*
 # monitoring keyboard package
 sudo apt-get install ros-noetic-teleop-twist-keyboard
 
+# install catkin
+sudo apt-get install catkin
+
 # reminder that the below is the command to source to workspace
 source <PATH TO YOUR ROS WORKSPACE>/devel/setup.bash
 ```
