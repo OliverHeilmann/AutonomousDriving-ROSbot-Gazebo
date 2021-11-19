@@ -30,6 +30,14 @@ Follow these tutorials:
 ## Install ROS
 Follow this tutorial:
 1) http://wiki.ros.org/noetic/Installation/Ubuntu
+2) Run the following commands
+```text 
+# add to bashrc to add workspace to source
+sudo nano ~/.bashrc
+
+# add the below to the bottom of your bashrc
+source <PATH TO YOUR ROS WORKSPACE>/devel/setup.bash
+```
 
 Now install the following packages:
 ```text
@@ -40,24 +48,74 @@ sudo apt-get install -y ros-noetic-slam-gmapping ros-noetic-
 controller-manager ros-noetic-joint-state-controller ros-noetic-
 gazebo-ros*
 
-sudo apt-get install ros-noetic-teleop-twist-keyboard
+# monitoring keyboard package
+sudo apt install ros-noetic-teleop-twist-keyboard
 
+# catkin dependencies
+sudo apt install python3-rosdep
+
+# install catkin
+sudo apt-get install python3-catkin-tools
+
+# reminder that the below is the command to source to workspace
 source <PATH TO YOUR ROS WORKSPACE>/devel/setup.bash
 ```
+
 __IMPORTANT!!__ Note that your ROS workspace (where you call the source command to) is the directory which you should open in VS Code. For example, my workspace is called '_ros_workspace_' so I use the command 'source ros_workspace/devel/setup.bash' to point ROS to my 'setup.bash' file. Note that this file will not be visible until you build the directory yourself using _catkin_init_workspace_ and _catkin_make_.
 
 ## Clipboard and Directory Sharing with UTM:
 1. Follow instructions till last step here: https://mac.getutm.app/gallery/ubuntu-20-04
 2. Find Shared Directory in UTM navigator, choose your directory to share (make sure Ubuntu instance is shut off)
 3. Boot up Ubuntu and run the following commands:
-4. cd Documents && mkdir VMShare && cd VMShare
-5. sudo apt-get install davfs2
-6. sudo mount -t http://127.0.0.1:9843/ davfs ~/Documents/VMShare (now you should see your shared folder)
-7. sudo nano ~/.bashrc
-8. echo <Ubuntu Password> | sudo -S mount -t davfs http://127.0.0.1:9843/ ~/Documents/VMShare -o username=<Host Machine Username>
+```text
+# make directories
+cd Documents && mkdir VMShare && cd VMShare
+
+# install docking package, then mount
+sudo apt-get install davfs2
+sudo apt install spice-vdagent spice-webdavd
+sudo mount -t http://127.0.0.1:9843/ davfs ~/Documents/VMShare (now you should see your shared folder)
+
+# add command to bashrc file
+sudo nano ~/.bashrc
+echo <Ubuntu Password> | sudo -S mount -t davfs http://127.0.0.1:9843/ ~/Documents/VMShare -o username=<Host Machine Username>
+```
+## Installing Xmonad
+Follow the following commands and then reboot. User should have the choice to boot into xmonad during login.
+```text
+# start by updating your apt package database:
+sudo apt-get update
+
+# to install Gnome:
+sudo apt install ubuntu-gnome-desktop
+
+# next install the xmonad window manager:
+sudo apt install xmonad
+```
+
+## Install Gazebo
+As expected, ROS labs are a little different for the M1 mac users running the UTM virtual machine, Ubuntu 20 and ROS Noetic (see https://moodle.bath.ac.uk/mod/forum/discuss.php?d=441851). There are a few changes to be made to this lab (see https://moodle.bath.ac.uk/pluginfile.php/1288068/mod_resource/content/8/EE50237%20Lab%205%20-%20ROSBot%20Simulation.pdf), I explain them below.
+
+Skip ‘Update to Latest Version of Gazebo 9’
+For ‘Install Additional ROS Packages’: Change all references of ‘melodic’ to ‘noetic’ like so sudo apt-get install ros-noetic-slam-gmapping
+‘To Run the simulation’: Here you will get errors when running run_rosbot.sh. Reading through the message, you will see that the xacro.py reference is not working. Do the following to fix:
+cd ~/ros_workspace/src/rosbot_bath/launch/
+nano rosbot_bath.launch
+Navigate to the line which reads '<param name="robot_description" command="$(find xacro)/xacro.py '$(find rosbot_bath)/urdf/rosbot.xacro’”/>'
+Change xacro.py to xacro i.e. delete the .py reference (in newer ROS versions, this is not a python file any longer)
+Do the same for rvis_bath.launch
+For good measure, navigate back to the top level ros_workspace directory and run catkin_make to recompile and sudo apt-get update.
+sudo shutdown -h now (this shuts the instance down so save anything you had opened if you need it)
+Now you should be able to run the commands mentioned in ‘To Run the simulation’. You will notice that something is wrong however. The screen is either black or flashing in Gazebo or Rvis. This is because we selected the gpu enhanced graphics settings in the UTM virtual machine Ubuntu 20 setup in https://mac.getutm.app/gallery/ubuntu-20-04
+Go to settings in UTM —> Display —> Change Emulated Display Card to virtue-ramfb, save changes.
+Reboot your instance and everything should work as in the lab tutorial!
+Some useful weblinks:
+
+https://answers.ros.org/question/122021/xacro-problem-invalid-param-tag-cannot-load-command-parameter-robot_description/
+https://github.com/richardw05/mybot_ws/issues/4
 
 
-# Setting Up ROS and Visual Studio Code
+# Setting Up ROS with Visual Studio Code
 ## Setting Up 'c_cpp_properties.json'
 Change the following section of your json file to account your relevant directories:
 ```text
@@ -110,6 +168,7 @@ catkin_make
 2) https://mac.getutm.app/gallery/ubuntu-20-04
 3) http://www.lib4dev.in/info/MrGnomes/VS_Code_ROS/i19793
 4) https://vitux.com/how-to-use-gdb-to-debug-programs-in-ubuntu/
-5) https://github.com/ms-iot/vscode-ros/blob/master/doc/spec/debug-ros-nodes.md
-6) https://code.visualstudio.com/docs/editor/variables-reference
-7) http://wiki.ros.org/noetic/Installation/Ubuntu
+5) https://code.visualstudio.com/download
+6) https://github.com/ms-iot/vscode-ros/blob/master/doc/spec/debug-ros-nodes.md
+7) https://code.visualstudio.com/docs/editor/variables-reference
+8) http://wiki.ros.org/noetic/Installation/Ubuntu
