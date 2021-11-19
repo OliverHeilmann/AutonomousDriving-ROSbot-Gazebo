@@ -49,13 +49,13 @@ controller-manager ros-noetic-joint-state-controller ros-noetic-
 gazebo-ros*
 
 # monitoring keyboard package
-sudo apt-get install ros-noetic-teleop-twist-keyboard
+sudo apt install ros-noetic-teleop-twist-keyboard
 
 # catkin dependencies
 sudo apt install python3-rosdep
 
 # install catkin
-sudo apt-get install catkin
+sudo apt-get install python3-catkin-tools
 
 # reminder that the below is the command to source to workspace
 source <PATH TO YOUR ROS WORKSPACE>/devel/setup.bash
