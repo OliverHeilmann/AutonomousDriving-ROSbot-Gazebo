@@ -1,0 +1,35 @@
+Add basics as source:
+	--> source ~/ros_workspace/devel/setup.sh
+
+https://mac.getutm.app/gallery/ubuntu-20-04
+
+WebDAV server on http://127.0.0.1:9843/ (can use WebDAV cliet to access it)
+
+Use below to mount alternatively
+	--> mount.davfs
+	
+Mount terminal command:
+	--> echo radex | sudo -S mount -t davfs http://127.0.0.1:9843/ ~/Documents/VMShare -o username=Oliver
+	--> sudo mount -t davfs http://127.0.0.1:9843/ ~/Documents/VMShare
+	
+Changing Linux Permissions
+	--> chmod +x <FILE NAME> # add permissions to a file
+	--> chmod -x <FILE NAME> # remove permissions to a file
+	--> chmod -R 755 <FOLER NAME/>	# add permissions to all elements in a folder
+	
+roslaunch info:
+	--> to take inputs use: <arg name="<VAR NAME>" />
+	--> put variable into appropriate location as: args="$(arg timeDelay)"
+	
+get necessary gazebo packages:
+	--> sudo apt-get install -y ros-noetic-slam-gmapping ros-noetic-controller-manager ros-noetic-joint-state-controller ros-noetic-gazebo-ros* 
+	--> sudo apt-get install ros-noetic-teleop-twist-keyboard
+
+Install .deb file:
+	--> sudo dpkg -i <PACKAGE_NAME>.deb
+	
+VS Code get options for running ROS
+	--> Ctrl + Shift + p
+	
+Search through ls output:
+	--> ls | grep <THE WORD YOU LOOK FOR>
