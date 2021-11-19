@@ -83,13 +83,13 @@ echo <Ubuntu Password> | sudo -S mount -t davfs http://127.0.0.1:9843/ ~/Documen
 ## Installing Xmonad
 Follow the following commands and then reboot. User should have the choice to boot into xmonad during login.
 ```text
-start by updating your apt package database:
+# start by updating your apt package database:
 sudo apt-get update
 
-to install Gnome:
+# to install Gnome:
 sudo apt install ubuntu-gnome-desktop
 
-#nNext install the xmonad window manager:
+# next install the xmonad window manager:
 sudo apt install xmonad
 ```
 
