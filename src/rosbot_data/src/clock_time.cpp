@@ -13,7 +13,7 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "clock_time_subscriber_node");
     ros::NodeHandle n("~");
     ros::Subscriber sub = n.subscribe("/clock", 10, myCallback);
-    ros::Rate loop_rate(50);
+    ros::Rate loop_rate(50); // this is the RATE, not time!
     int counter = 25;
     while (ros::ok())
     {
@@ -23,7 +23,7 @@ int main(int argc, char **argv)
         if (counter > 49)
         {
             counter = 0;
-            std::cout << "Simulation Time: " << simTime << std::endl;
+            std::cout << "Simulation Time: " << simTime << std::endl; 
         }
     }
 }
