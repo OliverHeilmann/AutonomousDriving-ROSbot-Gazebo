@@ -36,6 +36,7 @@ void imu_callback(const sensor_msgs::Imu &imu)
     rpy.y = pitch * rad2deg;
     rpy.z = yaw * rad2deg;
 
+    // won't publish anything before the node has been made (see main())
     if (pose_pub)
     {
         pose_pub.publish(rpy);
@@ -48,9 +49,11 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "imu_controller");
     ros::NodeHandle n("~");
 
+    // two callback functions
     ros::Subscriber pose_imu = n.subscribe("/imu", 1, imu_callback);
     ros::Subscriber pose_rpy = n.subscribe("/rpy", 1, rpy_callback);
 
+    // publisher node rpy
     pose_pub = n.advertise<geometry_msgs::Vector3>("/rpy", 10);
 
     ros::Rate loop_rate(100);
@@ -60,4 +63,3 @@ int main(int argc, char **argv)
         loop_rate.sleep();
     }
 }
-
