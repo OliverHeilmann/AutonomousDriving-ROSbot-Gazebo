@@ -169,3 +169,4 @@ catkin_make
 8) http://wiki.ros.org/noetic/Installation/Ubuntu
 9) https://answers.ros.org/question/122021/xacro-problem-invalid-param-tag-cannot-load-command-parameter-robot_description/
 10) https://github.com/richardw05/mybot_ws/issues/4
+11) https://askubuntu.com/questions/942930/usr-bin-env-python-no-such-file-or-directory

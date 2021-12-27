@@ -1,11 +1,13 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(rosbot_data)
+project(rosbot_oah33)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 add_compile_options(-std=c++11)
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
+  rospy
+  std_msgs
 )
 
 ###################################
@@ -36,7 +38,10 @@ include_directories(
 #############
 ## Install ##
 #############
-
+# launch files folder
+install(DIRECTORY launch
+	DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)
 
 
 #############
