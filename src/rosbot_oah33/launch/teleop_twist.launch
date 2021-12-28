@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<launch>
+
+  <node pkg="rosbot_oah33" name="node_teleop_twist" type="node_teleop_twist.py" output="screen">
+    <param name="scale_linear" value="1.0" type="double"/>
+    <param name="scale_angular" value="1.5" type="double"/>
+  </node>
+
+</launch>

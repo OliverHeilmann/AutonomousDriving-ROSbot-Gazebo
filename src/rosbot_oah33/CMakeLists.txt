@@ -29,9 +29,9 @@ include_directories(
 )
 
 # executable for braitenberg_exploration cpp file (using proxy sensors)
-add_executable(braitenberg_exploration_node src/braitenberg_exploration.cpp)
+add_executable(node_braitenberg src/node_braitenberg.cpp)
 
-target_link_libraries(braitenberg_exploration_node
+target_link_libraries(node_braitenberg
     ${catkin_LIBRARIES}
 )
 

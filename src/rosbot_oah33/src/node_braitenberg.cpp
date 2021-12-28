@@ -64,7 +64,7 @@ void setup_callback(const std_msgs::String &msg)
 
 int main(int argc, char **argv)
 {
-    ros::init(argc, argv, "braitenberg");
+    ros::init(argc, argv, "node_braitenberg");
     ros::NodeHandle n("~");
 
     // callback functions
