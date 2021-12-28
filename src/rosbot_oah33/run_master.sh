@@ -1,3 +1,3 @@
 #!/bin/bash
 
-roslaunch rosbot_oah33 node_master.launch
+roslaunch rosbot_oah33 master.launch
