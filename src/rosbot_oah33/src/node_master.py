@@ -17,6 +17,7 @@ import threading
 import rospy
 
 from std_msgs.msg import String
+from std_msgs.msg import Float64
 
 import sys, select, termios, tty
 
@@ -28,30 +29,41 @@ node_master.py is the main controller file for autonomous navigation.
 """
 
 # Subscribe to teleop to check for setup messages
-class SettingsThread(threading.Thread):
+class SubscriberThread(threading.Thread):
     def __init__(self):
-        super(SettingsThread, self).__init__()
+        super(SubscriberThread, self).__init__()
+        self.sub = None
         self.status = "stop"
-        self.done = False
+        self.heading = 0.
 
     # return current status when function called
     def get_status(self):
         return self.status
 
+    # return current status when function called
+    def get_heading(self):
+        return self.heading
+
     # ROSbot callback function for updating current status
-    def moveBot_callback(self, msg, args):
+    def callback_setup(self, msg, args):
         print(msg.data)
         self.status = msg.data
 
+    # ROSbot callback function for updating heading (from braitenberg forward proxy pair)
+    def callback_heading(self, msg, args):
+        print(msg.data)
+        self.heading = msg.data
+
     def stop(self):
-        print("SettingsThread stopping...")
-        self.done = True
+        print("SubscriberThread stopping...")
+        self.sub.unregister() # unregister to subscription eleganty (must have access to sub i.e. see init self.sub)
         self.join()
         rospy.signal_shutdown(None)
 
     def run(self):
         # create subscriber node with callback function
-        sub = rospy.Subscriber('cmd_setup', String, self.moveBot_callback, (pub_thread))
+        self.sub = rospy.Subscriber('/cmd_setup', String, self.callback_setup, ())
+        self.sub = rospy.Subscriber('/explore', Float64, self.callback_heading, ())
         rospy.spin()
 
 
@@ -72,8 +84,8 @@ if __name__=="__main__":
 
     # Setup threads for publishing and subscribing
     pub_thread = PublishThread(repeat)
-    set_thread = SettingsThread()
-    set_thread.start()
+    sub_thread = SubscriberThread()
+    sub_thread.start()
 
     x = 0
     y = 0
@@ -105,10 +117,14 @@ if __name__=="__main__":
         
         while(1):
             # check teleop_twist_ROSbot current command
-            curr_status = set_thread.get_status()
+            curr_status = sub_thread.get_status()
 
             if curr_status == "start":
                 # let other nodes control robot actions
+
+                heading = sub_thread.get_heading()
+                pub_thread.update(1,0,0,heading, speed, turn)
+
                 pass
 
             elif curr_status == "stop":
@@ -128,4 +144,4 @@ if __name__=="__main__":
 
     finally:
         pub_thread.stop()
-        set_thread.stop()
+        sub_thread.stop()
