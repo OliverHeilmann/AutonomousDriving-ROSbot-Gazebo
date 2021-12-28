@@ -46,12 +46,11 @@ class SubscriberThread(threading.Thread):
 
     # ROSbot callback function for updating current status
     def callback_setup(self, msg, args):
-        print(msg.data)
+        print("Setup Status: {}".format(msg.data))
         self.status = msg.data
 
     # ROSbot callback function for updating heading (from braitenberg forward proxy pair)
     def callback_heading(self, msg, args):
-        print(msg.data)
         self.heading = msg.data
 
     def stop(self):
