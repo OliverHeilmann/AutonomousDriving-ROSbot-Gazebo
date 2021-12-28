@@ -3,7 +3,6 @@
 #include <sensor_msgs/Imu.h>
 #include <tf/transform_broadcaster.h>
 
-
 float deg2rad = 3.14159265/180;
 float rad2deg = 1/deg2rad;
 ros::Publisher pose_pub;

@@ -28,11 +28,12 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-#add_executable(${PROJECT_NAME}_clock_time src/clock_time.cpp)
+# executable for braitenberg_exploration cpp file (using proxy sensors)
+add_executable(braitenberg_exploration_node src/braitenberg_exploration.cpp)
 
-#target_link_libraries(${PROJECT_NAME}_clock_time
-#    ${catkin_LIBRARIES}
-#)
+target_link_libraries(braitenberg_exploration_node
+    ${catkin_LIBRARIES}
+)
 
 
 #############
