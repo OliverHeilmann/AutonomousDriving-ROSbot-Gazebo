@@ -49,6 +49,8 @@ void rpy_callback(const geometry_msgs::Vector3 &msg)
 
     // NOW DO THE BRAITENBERG APPROACH STUFF BELOW AND PUBLISH THE OUTPUTS IF START IS CALLED
     // ELSE DON'T DO IT BUT STILL UPDATE SENSOR READINGS
+
+    // remember condition where rosbot is head on with obstacle
 }
 
 /* setup callback as start, stop, reset, _, ... */
@@ -69,7 +71,7 @@ int main(int argc, char **argv)
     ros::Subscriber range_fl = n.subscribe("/range/fl", 1, fl_callback);
     ros::Subscriber range_fr = n.subscribe("/range/fr", 1, fr_callback);
     ros::Subscriber pose_rpy = n.subscribe("/rpy", 1, rpy_callback);
-    ros::Subscriber setup = n.subscribe("/cmd_setup", 10, setup_callback);
+    ros::Subscriber setup = n.subscribe("/cmd_setup", 1, setup_callback);
 
     // publisher node explore
     explore_pub = n.advertise<geometry_msgs::Vector3>("/explore", 10);
