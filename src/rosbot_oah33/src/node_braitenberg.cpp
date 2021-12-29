@@ -22,6 +22,7 @@ float range_fr_min;
 geometry_msgs::Vector3 pose;
 
 float trip_thresh = 0.95; // larger means avoidance measures will happen closer to when sensor reads its max range (deals with sensor noise)
+float return_to_fwd = 0.5; // larger weight is faster return to forward direction
 float bberg_weight = 90; // weight for bberg sensor componenet [this says max movement is 90 deg]
 std_msgs::Float64 dTheta_yaw;
 
@@ -103,7 +104,7 @@ void callback_rpy(const geometry_msgs::Vector3 &msg)
         // otherwise go back to starting direction
         else
         {
-            dTheta_yaw.data = pose.z - yaw_start;
+            dTheta_yaw.data = return_to_fwd * (pose.z - yaw_start);
         }
 
         // print info to console if running as main
