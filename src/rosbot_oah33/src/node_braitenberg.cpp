@@ -137,6 +137,7 @@ void callback_setup(const std_msgs::String &msg)
     state = msg.data;
 }
 
+/* main sub and pub setup */
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, "node_braitenberg");

@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <launch>
 
+  <node name="node_clock_time" pkg="rosbot_oah33" type="node_clock_time"/>
+
   <node pkg="rosbot_oah33" name="node_master" type="node_master.py" output="screen">
     <param name="scale_linear" value="1.0" type="double"/>
     <param name="scale_angular" value="1.5" type="double"/>
   </node>
 
   <node name="node_braitenberg" pkg="rosbot_oah33" type="node_braitenberg"/>
-
-  <node name="node_clock_time" pkg="rosbot_oah33" type="node_clock_time"/>
 
 </launch>

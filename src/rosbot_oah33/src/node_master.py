@@ -18,6 +18,7 @@ import rospy
 
 from std_msgs.msg import String
 from std_msgs.msg import Float64
+from std_msgs.msg import Duration
 
 import sys, select, termios, tty
 
@@ -35,6 +36,7 @@ class SubscriberThread(threading.Thread):
         self.sub = None
         self.status = "stop"
         self.heading = 0.
+        self.runtime = rospy.Duration.from_sec(0)
 
     # return current status when function called
     def get_status(self):
@@ -44,6 +46,10 @@ class SubscriberThread(threading.Thread):
     def get_heading(self):
         return self.heading
 
+    # return current status when function called
+    def get_runtime(self):
+        return self.runtime.to_sec() # convert to seconds format before passing
+
     # ROSbot callback function for updating current status
     def callback_setup(self, msg, args):
         print("Setup Status: {}".format(msg.data))
@@ -52,6 +58,11 @@ class SubscriberThread(threading.Thread):
     # ROSbot callback function for updating heading (from braitenberg forward proxy pair)
     def callback_heading(self, msg, args):
         self.heading = msg.data
+
+    # ROSbot callback function for updating elapsed runtime
+    def callback_runtime(self, msg, args):
+        self.runtime = msg.data
+        print( "[INFO]: Run Duration: {}".format( self.runtime.to_sec() ) )
 
     def stop(self):
         print("SubscriberThread stopping...")
@@ -63,6 +74,7 @@ class SubscriberThread(threading.Thread):
         # create subscriber node with callback function
         self.sub = rospy.Subscriber('/cmd_setup', String, self.callback_setup, ())
         self.sub = rospy.Subscriber('/explore', Float64, self.callback_heading, ())
+        self.sub = rospy.Subscriber('/elapsed_time', Duration, self.callback_runtime, ())
         rospy.spin()
 
 
@@ -102,7 +114,7 @@ if __name__=="__main__":
         """
         TO DO:
 
-        Need to calcuate dTime and dDistance as well (based on trigger)
+        Need to calcuate dDistance
         
         """
         
@@ -111,15 +123,11 @@ if __name__=="__main__":
             curr_status = sub_thread.get_status()
 
             if curr_status == "start":
-                # let other nodes control robot actions
-
                 heading = sub_thread.get_heading()
                 pub_thread.update(1,0,0,heading, speed, turn)
 
-                pass
-
             elif curr_status == "stop":
-                # set all values to zero, stop rosbot (NOTE: INCLUDE STOP CLOCK)
+                # set all values to zero, stop rosbot
                 pub_thread.update(0,0,0,0, speed, turn)
 
             elif curr_status == "reset":
