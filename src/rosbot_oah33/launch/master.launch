@@ -8,4 +8,6 @@
 
   <node name="node_braitenberg" pkg="rosbot_oah33" type="node_braitenberg"/>
 
+  <node name="node_clock_time" pkg="rosbot_oah33" type="node_clock_time"/>
+
 </launch>

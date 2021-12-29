@@ -101,14 +101,6 @@ if __name__=="__main__":
         
         """
         TO DO:
-        
-        ONCE BBERG NODE IS DONE AND THETA IS PUBLISHED, USE THIS SCRIPT
-        TO SUBSCRIBE TO IT. IN THE CALLBACK THEN UPDATE THE VELOCITY 
-        VALUES... 
-
-        When done, then will start to include the bias approaches. Could
-        do in the bberg node but keeping it here might be better for when
-        other sensors are included e.g. lidar.
 
         Need to calcuate dTime and dDistance as well (based on trigger)
         

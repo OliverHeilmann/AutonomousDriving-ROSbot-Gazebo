@@ -1,3 +1,12 @@
+# Development Content
+## Commands
+1) rosrun rosbot_bath run_rosbot.sh
+2) rosrun rosbot_oah33 run_teleop_twist.sh
+3) rosrun rosbot_oah33 run_master.sh
+------------------------------------------------------------------------
+------------------------------------------------------------------------
+------------------------------------------------------------------------
+
 # Description
 This repository contains all the relevant configurations which a user will need for successfully setting up ROS, C++ and Python (with debugging) on Visual Studio Code. VS Code provides users with debugging and syntax suggestions/ support as well as github and ROS environment making it a powerful and effective tool for robotics software development.
 

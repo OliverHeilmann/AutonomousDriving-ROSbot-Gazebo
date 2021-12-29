@@ -142,7 +142,7 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "node_braitenberg");
     ros::NodeHandle n("~");
 
-    // callback functions
+    // subscriptions
     ros::Subscriber range_fl = n.subscribe("/range/fl", 1, callback_fl);
     ros::Subscriber range_fr = n.subscribe("/range/fr", 1, callback_fr);
     ros::Subscriber pose_rpy = n.subscribe("/rpy", 1, callback_rpy);

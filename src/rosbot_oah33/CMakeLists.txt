@@ -35,6 +35,13 @@ target_link_libraries(node_braitenberg
     ${catkin_LIBRARIES}
 )
 
+# 
+add_executable(node_clock_time src/node_clock_time.cpp)
+
+target_link_libraries(node_clock_time
+    ${catkin_LIBRARIES}
+)
+
 
 #############
 ## Install ##

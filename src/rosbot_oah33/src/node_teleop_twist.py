@@ -217,7 +217,7 @@ if __name__=="__main__":
                 status = (status + 1) % 15
             # if key in setupBindings then publish update for subsribers to take action on
             elif key in setupBindings.keys():
-                print("{0} command was called".format(setupBindings[key]))
+                print("[INFO]: {0}".format(setupBindings[key]))
                 pub_thread.setup(setupBindings[key])
                 #moveBindings["o"] = (moveBindings["o"][0],moveBindings["o"][1],moveBindings["o"][2],moveBindings["o"][3]+0.05) #change movement angle example
                 #th = moveBindings["o"][3]
