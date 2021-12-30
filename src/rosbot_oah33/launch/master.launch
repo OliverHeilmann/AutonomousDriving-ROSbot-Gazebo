@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <launch>
 
-  <node name="node_clock_time" pkg="rosbot_oah33" type="node_clock_time"/>
+  <node name="node_comp_results" pkg="rosbot_oah33" type="node_comp_results"/>
 
   <node pkg="rosbot_oah33" name="node_master" type="node_master.py" output="screen">
     <param name="scale_linear" value="1.0" type="double"/>
