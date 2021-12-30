@@ -67,11 +67,6 @@ class PublishThread(threading.Thread):
         self.condition.notify()
         self.condition.release()
 
-    # publish new ROSbot state
-    def setup(self, state):
-        # Publish.
-        self.setupPub.publish(state)
-
     def stop(self):
         print("PublishThread stopping...")
         self.done = True

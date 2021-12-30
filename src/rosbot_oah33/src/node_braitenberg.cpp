@@ -31,7 +31,7 @@ bool start_trigger = true;
 
 std::string state;
 
-/* read the rpy message and genertae a transform to represent the orientation */
+/* read front left proxy sensor and store results */
 void callback_fl(const sensor_msgs::Range &msg)
 {
     //std::cout << "------Front Left------\n" << msg << std::endl;
@@ -41,8 +41,7 @@ void callback_fl(const sensor_msgs::Range &msg)
     range_fl_min = msg.min_range;
 }
 
-/* read the IMU message and generate a pose message like the physical ROSbot */
-/* RHW Updated 24-11-20 with more accurate calculation of RPY */
+/* read front right proxy sensor and store results */
 void callback_fr(const sensor_msgs::Range &msg)
 {
     //std::cout << "------Front Right------\n" << msg << std::endl;
@@ -52,6 +51,12 @@ void callback_fr(const sensor_msgs::Range &msg)
     range_fr_min = msg.min_range;
 }
 
+/* read back left proxy sensor */
+void callback_rl(const sensor_msgs::Range &msg){}
+
+/* read back right proxy sensor */
+void callback_rr(const sensor_msgs::Range &msg){}
+
 /* read the rpy roll, pitch, yaw values [deg] */
 void callback_rpy(const geometry_msgs::Vector3 &msg)
 {
@@ -60,73 +65,58 @@ void callback_rpy(const geometry_msgs::Vector3 &msg)
     // update pose values
     pose = msg;
 
-    if (state == "start"){
-        // std::cout << "[INFO]: node_braitenberg.cpp, callback_rpy recieved: " << state << std::endl;
+    // std::cout << "[INFO]: node_braitenberg.cpp, callback_rpy recieved: " << state << std::endl;
 
-        // store starting pose if first instance only
-        if (start_trigger)
-        {
-            // print info to console if running as main
-            std::cout << "[INFO]: Starting Heading[deg]: " << std::to_string(pose.z) << std::endl;
-            
-            yaw_start = pose.z;
-            start_trigger = false;
-        }
+    // store starting pose if first instance only
+    if (start_trigger)
+    {
+        // print info to console if running as main
+        std::cout << "[INFO]: Starting Heading[deg]: " << std::to_string(pose.z) << std::endl;
+        
+        yaw_start = pose.z;
+        start_trigger = false;
+    }
 
-        // proxy sensors will read 0.9 when nothing is ahead, make sure we aren't avoiding nothing by
-        // checking that current range is less than max val on either sensor... 
-        if (range_fl < (trip_thresh * range_fl_max) && range_fr < (trip_thresh * range_fr_max) ) // both sensors firing!
-        {
-            // if both sensors detect an obstacle, we should check which direction is most 
-            // favourable with bias calculation... (to stay pointing straight)
+    // proxy sensors will read 0.9 when nothing is ahead, make sure we aren't avoiding nothing by
+    // checking that current range is less than max val on either sensor... 
+    if (range_fl < (trip_thresh * range_fl_max) && range_fr < (trip_thresh * range_fr_max) ) // both sensors firing!
+    {
+        // if both sensors detect an obstacle, we should check which direction is most 
+        // favourable with bias calculation... (to stay pointing straight)
 
-            // rosbot should turn left
-            if (yaw_start - pose.z < 0)
-            {
-                dTheta_yaw.data = -bberg_weight * ( 1 - (range_fr-range_fr_min) / (range_fr_max-range_fr_min) );
-            }
-            // else rosbot should turn right
-            else
-            {
-                dTheta_yaw.data = bberg_weight * ( 1 - (range_fl-range_fl_min) / (range_fl_max-range_fl_min) );
-            }
-        }
-        // if left sensor triggered but right hasn't, turn right
-        else if (range_fl < (trip_thresh * range_fl_max) && range_fr >= (trip_thresh * range_fr_max) )
-        {
-            dTheta_yaw.data = bberg_weight * ( 1 - (range_fl-range_fl_min) / (range_fl_max-range_fl_min) );
-        }
-        // if right sensor triggered but left hasn't, turn left
-        else if (range_fr < (trip_thresh * range_fr_max) && range_fl >= (trip_thresh * range_fl_max) )
+        // rosbot should turn left
+        if (yaw_start - pose.z < 0)
         {
             dTheta_yaw.data = -bberg_weight * ( 1 - (range_fr-range_fr_min) / (range_fr_max-range_fr_min) );
         }
-        // otherwise go back to starting direction
+        // else rosbot should turn right
         else
         {
-            dTheta_yaw.data = return_to_fwd * (pose.z - yaw_start);
+            dTheta_yaw.data = bberg_weight * ( 1 - (range_fl-range_fl_min) / (range_fl_max-range_fl_min) );
         }
-
-        // print info to console if running as main
-        std::cout << "----------> delta theta [deg]: " << std::to_string(dTheta_yaw.data) << std::endl;
-
-        // publish proposed yaw angle (in radians)
-        dTheta_yaw.data = -dTheta_yaw.data * deg2rad; // note negative because ROSbot cmds are inversed!
-        explore_pub.publish(dTheta_yaw);
     }
-    else if (state == "stop")
+    // if left sensor triggered but right hasn't, turn right
+    else if (range_fl < (trip_thresh * range_fl_max) && range_fr >= (trip_thresh * range_fr_max) )
     {
-        //std::cout << "[INFO]: Stopping ROSbot... " << std::endl;
+        dTheta_yaw.data = bberg_weight * ( 1 - (range_fl-range_fl_min) / (range_fl_max-range_fl_min) );
     }
-    else if (state == "reset")
+    // if right sensor triggered but left hasn't, turn left
+    else if (range_fr < (trip_thresh * range_fr_max) && range_fl >= (trip_thresh * range_fl_max) )
     {
-        //std::cout << "[INFO]: Resetting ROSbot... " << std::endl;
+        dTheta_yaw.data = -bberg_weight * ( 1 - (range_fr-range_fr_min) / (range_fr_max-range_fr_min) );
+    }
+    // otherwise go back to starting direction
+    else
+    {
+        dTheta_yaw.data = return_to_fwd * (pose.z - yaw_start);
+    }
 
-        start_trigger = true; // reset trigger so next 'start' will store a new starting pose
-    }
-    else {
-        //std::cout << "[INFO]: node_braitenberg.cpp, callback_rpy recieved unexpected arguements: " << state << std::endl;
-    }
+    // print info to console if running as main
+    std::cout << "----------> delta theta [deg]: " << std::to_string(dTheta_yaw.data) << std::endl;
+
+    // publish proposed yaw angle (in radians)
+    dTheta_yaw.data = -dTheta_yaw.data * deg2rad; // note negative because ROSbot cmds are inversed!
+    explore_pub.publish(dTheta_yaw);
 }
 
 /* setup callback as start, stop, reset, _, ... */
@@ -147,11 +137,12 @@ int main(int argc, char **argv)
     // subscriptions
     ros::Subscriber range_fl = n.subscribe("/range/fl", 1, callback_fl);
     ros::Subscriber range_fr = n.subscribe("/range/fr", 1, callback_fr);
+    ros::Subscriber range_rl = n.subscribe("/range/rl", 1, callback_rl);
+    ros::Subscriber range_rr = n.subscribe("/range/rr", 1, callback_rr);
     ros::Subscriber pose_rpy = n.subscribe("/rpy", 1, callback_rpy);
-    ros::Subscriber setup = n.subscribe("/cmd_setup", 1, callback_setup);
 
     // publisher node explore
-    explore_pub = n.advertise<std_msgs::Float64>("/explore", 10);
+    explore_pub = n.advertise<std_msgs::Float64>("/heading/bberg", 10);
 
     ros::Rate loop_rate(100);
     while (ros::ok())

@@ -31,29 +31,28 @@ node_master.py is the main controller file for autonomous navigation.
 
 # Subscribe to teleop to check for setup messages
 class SubscriberThread(threading.Thread):
-    def __init__(self):
+    def __init__(self, pub_thread):
         super(SubscriberThread, self).__init__()
+        self.pub_thread = pub_thread
         self.sub = None
         self.status = "stop"
         self.heading = 0.
         self.runtime = rospy.Duration.from_sec(0)
 
-    # return current status when function called
-    def get_status(self):
-        return self.status
-
-    # return current status when function called
-    def get_heading(self):
-        return self.heading
-
-    # return current status when function called
-    def get_runtime(self):
-        return self.runtime.to_sec() # convert to seconds format before passing
+    # return current status, heading and time when function called
+    def get_data(self):
+        return self.status, self.heading, self.runtime.to_sec # convert to seconds format before passing
 
     # ROSbot callback function for updating current status
     def callback_setup(self, msg, args):
         print("Setup Status: {}".format(msg.data))
         self.status = msg.data
+
+        # stop rosbot from moving if stop cmd
+        if self.status == "stop":
+            speed = rospy.get_param("~speed", 0.5)
+            turn = rospy.get_param("~turn", 1.0)
+            self.pub_thread.update(0,0,0,0, speed, turn)
 
     # ROSbot callback function for updating heading (from braitenberg forward proxy pair)
     def callback_heading(self, msg, args):
@@ -73,7 +72,7 @@ class SubscriberThread(threading.Thread):
     def run(self):
         # create subscriber node with callback function
         self.sub = rospy.Subscriber('/cmd_setup', String, self.callback_setup, ())
-        self.sub = rospy.Subscriber('/explore', Float64, self.callback_heading, ())
+        self.sub = rospy.Subscriber('/heading/bberg', Float64, self.callback_heading, ())
         self.sub = rospy.Subscriber('/elapsed_time', Duration, self.callback_runtime, ())
         rospy.spin()
 
@@ -95,7 +94,7 @@ if __name__=="__main__":
 
     # Setup threads for publishing and subscribing
     pub_thread = PublishThread(repeat)
-    sub_thread = SubscriberThread()
+    sub_thread = SubscriberThread(pub_thread)
     sub_thread.start()
 
     x = 0
@@ -120,23 +119,10 @@ if __name__=="__main__":
         
         while(1):
             # check teleop_twist_ROSbot current command
-            curr_status = sub_thread.get_status()
+            curr_status, curr_heading, curr_runtime = sub_thread.get_data()
 
-            if curr_status == "start":
-                heading = sub_thread.get_heading()
-                pub_thread.update(1,0,0,heading, speed, turn)
-
-            elif curr_status == "stop":
-                # set all values to zero, stop rosbot
-                pub_thread.update(0,0,0,0, speed, turn)
-
-            elif curr_status == "reset":
-                # placeholder for resetting values e.g. clock and distance travelled
-                pass
-
-            else:
-                # not expected, but if unexpected result, set all values to zero...
-                pub_thread.update(0,0,0,0, speed, turn)
+            if curr_status != "stop":
+                pub_thread.update(1,0,0,curr_heading, speed, turn)
 
     except Exception as e:
         print(e)
