@@ -22,7 +22,7 @@ float range_fr_min;
 geometry_msgs::Vector3 pose;
 
 float trip_thresh = 0.95; // larger means avoidance measures will happen closer to when sensor reads its max range (deals with sensor noise)
-float return_to_fwd = 0.5; // larger weight is faster return to forward direction
+float return_to_fwd = 0.8; // larger weight is faster return to forward direction
 float bberg_weight = 90; // weight for bberg sensor componenet [this says max movement is 90 deg]
 std_msgs::Float64 dTheta_yaw;
 
@@ -65,58 +65,64 @@ void callback_rpy(const geometry_msgs::Vector3 &msg)
     // update pose values
     pose = msg;
 
-    // std::cout << "[INFO]: node_braitenberg.cpp, callback_rpy recieved: " << state << std::endl;
+    // only publish results when not stop setup cmd.
+    if (state != "stop"){
 
-    // store starting pose if first instance only
-    if (start_trigger)
-    {
-        // print info to console if running as main
-        std::cout << "[INFO]: Starting Heading[deg]: " << std::to_string(pose.z) << std::endl;
-        
-        yaw_start = pose.z;
-        start_trigger = false;
-    }
+        // if reset, then set new start heading and set state to start
+        // to ensure only x1 new heading is created (rather than loop)
+        if (state == "reset"){ start_trigger = true; state = "start";}
 
-    // proxy sensors will read 0.9 when nothing is ahead, make sure we aren't avoiding nothing by
-    // checking that current range is less than max val on either sensor... 
-    if (range_fl < (trip_thresh * range_fl_max) && range_fr < (trip_thresh * range_fr_max) ) // both sensors firing!
-    {
-        // if both sensors detect an obstacle, we should check which direction is most 
-        // favourable with bias calculation... (to stay pointing straight)
-
-        // rosbot should turn left
-        if (yaw_start - pose.z < 0)
+        // store starting pose if first instance only
+        if (start_trigger)
         {
-            dTheta_yaw.data = -bberg_weight * ( 1 - (range_fr-range_fr_min) / (range_fr_max-range_fr_min) );
+            // print info to console if running as main
+            std::cout << "[INFO]: Starting Heading[deg]: " << std::to_string(pose.z) << std::endl;
+            
+            yaw_start = pose.z;
+            start_trigger = false;
         }
-        // else rosbot should turn right
-        else
+
+        // proxy sensors will read 0.9 when nothing is ahead, make sure we aren't avoiding nothing by
+        // checking that current range is less than max val on either sensor... 
+        if (range_fl < (trip_thresh * range_fl_max) && range_fr < (trip_thresh * range_fr_max) ) // both sensors firing!
+        {
+            // if both sensors detect an obstacle, we should check which direction is most 
+            // favourable with bias calculation... (to stay pointing straight)
+
+            // rosbot should turn left
+            if (yaw_start - pose.z < 0)
+            {
+                dTheta_yaw.data = -bberg_weight * ( 1 - (range_fr-range_fr_min) / (range_fr_max-range_fr_min) );
+            }
+            // else rosbot should turn right
+            else
+            {
+                dTheta_yaw.data = bberg_weight * ( 1 - (range_fl-range_fl_min) / (range_fl_max-range_fl_min) );
+            }
+        }
+        // if left sensor triggered but right hasn't, turn right
+        else if (range_fl < (trip_thresh * range_fl_max) && range_fr >= (trip_thresh * range_fr_max) )
         {
             dTheta_yaw.data = bberg_weight * ( 1 - (range_fl-range_fl_min) / (range_fl_max-range_fl_min) );
         }
-    }
-    // if left sensor triggered but right hasn't, turn right
-    else if (range_fl < (trip_thresh * range_fl_max) && range_fr >= (trip_thresh * range_fr_max) )
-    {
-        dTheta_yaw.data = bberg_weight * ( 1 - (range_fl-range_fl_min) / (range_fl_max-range_fl_min) );
-    }
-    // if right sensor triggered but left hasn't, turn left
-    else if (range_fr < (trip_thresh * range_fr_max) && range_fl >= (trip_thresh * range_fl_max) )
-    {
-        dTheta_yaw.data = -bberg_weight * ( 1 - (range_fr-range_fr_min) / (range_fr_max-range_fr_min) );
-    }
-    // otherwise go back to starting direction
-    else
-    {
-        dTheta_yaw.data = return_to_fwd * (pose.z - yaw_start);
-    }
+        // if right sensor triggered but left hasn't, turn left
+        else if (range_fr < (trip_thresh * range_fr_max) && range_fl >= (trip_thresh * range_fl_max) )
+        {
+            dTheta_yaw.data = -bberg_weight * ( 1 - (range_fr-range_fr_min) / (range_fr_max-range_fr_min) );
+        }
+        // otherwise go back to starting direction
+        else
+        {
+            dTheta_yaw.data = return_to_fwd * (pose.z - yaw_start);
+        }
 
-    // print info to console if running as main
-    std::cout << "----------> delta theta [deg]: " << std::to_string(dTheta_yaw.data) << std::endl;
+        // print info to console if running as main
+        std::cout << "----------> delta theta [deg]: " << std::to_string(dTheta_yaw.data) << std::endl;
 
-    // publish proposed yaw angle (in radians)
-    dTheta_yaw.data = -dTheta_yaw.data * deg2rad; // note negative because ROSbot cmds are inversed!
-    explore_pub.publish(dTheta_yaw);
+        // publish proposed yaw angle (in radians)
+        dTheta_yaw.data = -dTheta_yaw.data * deg2rad; // note negative because ROSbot cmds are inversed!
+        explore_pub.publish(dTheta_yaw);
+    }
 }
 
 /* setup callback as start, stop, reset, _, ... */
@@ -140,6 +146,7 @@ int main(int argc, char **argv)
     ros::Subscriber range_rl = n.subscribe("/range/rl", 1, callback_rl);
     ros::Subscriber range_rr = n.subscribe("/range/rr", 1, callback_rr);
     ros::Subscriber pose_rpy = n.subscribe("/rpy", 1, callback_rpy);
+    ros::Subscriber setup = n.subscribe("/cmd_setup", 1, callback_setup);
 
     // publisher node explore
     explore_pub = n.advertise<std_msgs::Float64>("/heading/bberg", 10);

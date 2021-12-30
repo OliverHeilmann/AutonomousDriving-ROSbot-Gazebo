@@ -36,9 +36,9 @@ target_link_libraries(node_braitenberg
 )
 
 # 
-add_executable(node_clock_time src/node_clock_time.cpp)
+add_executable(node_comp_results src/node_comp_results.cpp)
 
-target_link_libraries(node_clock_time
+target_link_libraries(node_comp_results
     ${catkin_LIBRARIES}
 )
 

@@ -38,6 +38,7 @@ class SubscriberThread(threading.Thread):
         self.status = "stop"
         self.heading = 0.
         self.runtime = rospy.Duration.from_sec(0)
+        self.total_dist = 0
 
     # return current status, heading and time when function called
     def get_data(self):
@@ -45,14 +46,17 @@ class SubscriberThread(threading.Thread):
 
     # ROSbot callback function for updating current status
     def callback_setup(self, msg, args):
-        print("Setup Status: {}".format(msg.data))
-        self.status = msg.data
+        print("[INFO]: Setup Status: {}".format(msg.data))
 
-        # stop rosbot from moving if stop cmd
-        if self.status == "stop":
+        # stop rosbot from moving if stop or reset cmd
+        if msg.data != "start":
             speed = rospy.get_param("~speed", 0.5)
             turn = rospy.get_param("~turn", 1.0)
             self.pub_thread.update(0,0,0,0, speed, turn)
+        
+        # reset should not change the rosbot plans
+        if msg.data != "reset":
+            self.status = msg.data
 
     # ROSbot callback function for updating heading (from braitenberg forward proxy pair)
     def callback_heading(self, msg, args):
@@ -61,8 +65,13 @@ class SubscriberThread(threading.Thread):
     # ROSbot callback function for updating elapsed runtime
     def callback_runtime(self, msg, args):
         self.runtime = msg.data
-        print( "[INFO]: Run Duration: {}".format( self.runtime.to_sec() ) )
+        print( "[INFO]: Total Run Time: {}".format( self.runtime.to_sec() ) )
 
+    # ROSbot callback function for updating total distance
+    def callback_total_dist(self, msg, args):
+        self.total_dist = msg.data
+        print( "[INFO]: Total Distance: {}".format( self.total_dist ) )
+    
     def stop(self):
         print("SubscriberThread stopping...")
         self.sub.unregister() # unregister to subscription eleganty (must have access to sub i.e. see init self.sub)
@@ -73,7 +82,8 @@ class SubscriberThread(threading.Thread):
         # create subscriber node with callback function
         self.sub = rospy.Subscriber('/cmd_setup', String, self.callback_setup, ())
         self.sub = rospy.Subscriber('/heading/bberg', Float64, self.callback_heading, ())
-        self.sub = rospy.Subscriber('/elapsed_time', Duration, self.callback_runtime, ())
+        self.sub = rospy.Subscriber('/results/elapsed_time', Duration, self.callback_runtime, ())
+        self.sub = rospy.Subscriber('/results/total_dist', Float64, self.callback_total_dist, ())
         rospy.spin()
 
 
@@ -123,6 +133,8 @@ if __name__=="__main__":
 
             if curr_status != "stop":
                 pub_thread.update(1,0,0,curr_heading, speed, turn)
+
+            rospy.sleep(0.05)
 
     except Exception as e:
         print(e)
