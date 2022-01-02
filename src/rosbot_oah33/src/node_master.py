@@ -120,13 +120,6 @@ if __name__=="__main__":
         print(intro)
         print(vels(speed,turn))
         
-        """
-        TO DO:
-
-        Need to calcuate dDistance
-        
-        """
-        
         while(1):
             # check teleop_twist_ROSbot current command
             curr_status, curr_heading, curr_runtime = sub_thread.get_data()

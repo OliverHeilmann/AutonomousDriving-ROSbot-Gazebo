@@ -35,13 +35,19 @@ target_link_libraries(node_braitenberg
     ${catkin_LIBRARIES}
 )
 
-# 
+# executable for competition results (clock and distance calc)
 add_executable(node_comp_results src/node_comp_results.cpp)
 
 target_link_libraries(node_comp_results
     ${catkin_LIBRARIES}
 )
 
+# executable for lidar headings
+add_executable(node_lidar src/node_lidar.cpp)
+
+target_link_libraries(node_lidar
+    ${catkin_LIBRARIES}
+)
 
 #############
 ## Install ##

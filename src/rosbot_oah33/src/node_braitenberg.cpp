@@ -69,7 +69,8 @@ void callback_rpy(const geometry_msgs::Vector3 &msg)
     if (state != "stop"){
 
         // if reset, then set new start heading and set state to start
-        // to ensure only x1 new heading is created (rather than loop)
+        // to ensure only x1 new heading is created (rather than loop
+        // continually into this function)
         if (state == "reset"){ start_trigger = true; state = "start";}
 
         // store starting pose if first instance only

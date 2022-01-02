@@ -10,4 +10,6 @@
 
   <node name="node_braitenberg" pkg="rosbot_oah33" type="node_braitenberg"/>
 
+  <node name="node_lidar" pkg="rosbot_oah33" type="node_lidar"/>
+
 </launch>

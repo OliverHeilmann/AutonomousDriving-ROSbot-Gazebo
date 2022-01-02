@@ -81,7 +81,7 @@ void callback_setup(const std_msgs::String &msg)
 /* main sub and pub setup */
 int main(int argc, char **argv)
 {
-    ros::init(argc, argv, "node_clock_time");
+    ros::init(argc, argv, "node_comp_results");
     ros::NodeHandle n("~");
     
     // subscriptions
