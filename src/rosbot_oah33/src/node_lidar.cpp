@@ -1,16 +1,15 @@
 #include <ros/ros.h>
 #include <std_msgs/String.h>
-#include <std_msgs/Float64.h>
+#include <std_msgs/Float64MultiArray.h>
 #include <sensor_msgs/LaserScan.h>
 #include<cmath>
 #include<iostream>
 #include <vector>
 
-ros::Publisher lidar_headings;
+ros::Publisher lidar_array;
 
+std_msgs::Float64MultiArray lidar_FMA;
 std::string state;
-
-float lidar_array[720];
 
 /* callback for scan data */
 void callback_scan(const sensor_msgs::LaserScan &msg){
@@ -22,70 +21,68 @@ void callback_scan(const sensor_msgs::LaserScan &msg){
     float angle_range = msg.angle_increment * sample_num;
 
     // how many segments should the lidar be broken into
-    int parts = 4; // EVEN NUMBERS ONLY
+    int parts = 12; // EVEN NUMBERS ONLY
 
     // how many samples per part (last segment may have less than the rest)
     int remainder = sample_num % parts;
     int samples_per_part = (sample_num - remainder) / parts;
-
-    std::cout<< "Remainder: " << std::to_string(remainder) << std::endl;
-    std::cout<< "SPP: " << std::to_string(samples_per_part) << std::endl;
-    std::cout<< "Samples: " << std::to_string(sample_num) << std::endl;
-
+    
     // minimumm acceptable range of obstacles [m]
-    float min_obj_range = 1.;
+    float min_obj_range = .6;
 
-    // make 2D array of lidar headings 
+    // make array of lidar headings 
     float lidar_headings[parts] = {};
+    int lidar_movables[parts] = {};
+    int step = -1;
+    float el;
 
-    int step = 0;
-    bool moveable = true;
-    for (int i = 0; i <= sample_num-1; i++)
+    int count = 0;
+
+    for (int i = 0; i < sample_num; i++)
     {
-        // if we are at a new segment, then store movable state and reset movable to default state
-        // (which is considered as true)
-        if ( i % samples_per_part == 0)
+        // check if current i is the first or middle of a part, add heading if middle
+        if ( i % samples_per_part == 0) { step++; }
+        else if  (i % (samples_per_part / 2) == 0)
         {
-            moveable = true;
+            lidar_headings[step] = -(i - samples_per_part/2) * msg.angle_increment;
         }
-        // if at middle of part, store its heading in lidar_headings array
-        else if  (i % (samples_per_part/ 2) == 0)
+        
+        // check if result is negative (cannot search for array entries with neg numbers i c++!)
+        if (i - samples_per_part / 2 < 0)
         {
-            if (lidar_headings[step] != -999.)
-            {
-                lidar_headings[step] = (i - samples_per_part/2 ) * msg.angle_increment;
-            }
-
-            std::cout << std::to_string(i) << ") Heading: " << std::to_string( lidar_headings[step] ) << std::endl;
-            //std::cout << std::to_string(i) << ") Step: " << std::to_string(step ) << std::endl;
-            
-            step++;
+            el = msg.ranges[sample_num - samples_per_part/2 + i];
+        }
+        else
+        {
+            el = msg.ranges[i - samples_per_part/2];
         }
 
-        // if there is a range less than the minimum acceptable in this part, set movable to false
-        // i.e. robot cannot move here...
-        if (msg.ranges[i - samples_per_part/2] <= min_obj_range)
+        // if the element range is < user defined threshold, set to not available (==1)
+        if (el < min_obj_range)
         {
-            moveable = false;
-            lidar_headings[step] = -999.;
+            lidar_movables[step] = 1;
         }
-
-        /*
-        else if ( i % (samples_per_part-1) == 0)
-        {
-            if (moveable == false)
-            {
-                lidar_headings[step] == -999.;
-            }
-
-            std::cout << std::to_string(lidar_headings[step]) << ", ";
-        }
-        */
     }
 
+    // clear message cache
+    lidar_FMA.data.clear();
+    
     for (int i = 0; i <= parts-1; i++){
-        std::cout << std::to_string(lidar_headings[i]) << ", ";
+        if (lidar_movables[i] != 0)
+        {
+            lidar_headings[i] = -999.;
+        }
+
+        // add el to ROS message vector
+        lidar_FMA.data.push_back(lidar_headings[i]);
+
+        // print out headings to console in radians (-999 for bad paths)
+        std::cout << std::fixed << std::setprecision(2) << (lidar_headings[i]) << ", ";
     }
+    std::cout << "\n";
+
+    // publish message
+    lidar_array.publish(lidar_FMA);
 }
 
 /* setup callback as start, stop, reset, _, ... */
@@ -111,7 +108,7 @@ int main(int argc, char **argv)
     ros::Subscriber setup = n.subscribe("/cmd_setup", 1, callback_setup);
 
     // publishers
-    lidar_headings = n.advertise<std_msgs::Float64>("/heading/lidar", 10);
+    lidar_array = n.advertise<std_msgs::Float64MultiArray>("/heading/lidar", 10);
 
     ros::Rate loop_rate(20); // this is the RATE, not time
     while (ros::ok())
