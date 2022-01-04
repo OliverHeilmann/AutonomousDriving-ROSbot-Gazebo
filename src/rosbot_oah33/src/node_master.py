@@ -18,6 +18,7 @@ import rospy
 
 from std_msgs.msg import String
 from std_msgs.msg import Float64
+from std_msgs.msg import Float64MultiArray
 from std_msgs.msg import Duration
 
 import sys, select, termios, tty
@@ -36,13 +37,14 @@ class SubscriberThread(threading.Thread):
         self.pub_thread = pub_thread
         self.sub = None
         self.status = "stop"
-        self.heading = 0.
+        self.bberg = 0.
+        self.lidar = []
         self.runtime = rospy.Duration.from_sec(0)
         self.total_dist = 0
 
     # return current status, heading and time when function called
     def get_data(self):
-        return self.status, self.heading, self.runtime.to_sec # convert to seconds format before passing
+        return self.status, self.bberg, self.runtime.to_sec # convert to seconds format before passing
 
     # ROSbot callback function for updating current status
     def callback_setup(self, msg, args):
@@ -59,8 +61,17 @@ class SubscriberThread(threading.Thread):
             self.status = msg.data
 
     # ROSbot callback function for updating heading (from braitenberg forward proxy pair)
-    def callback_heading(self, msg, args):
-        self.heading = msg.data
+    def callback_bberg(self, msg, args):
+        self.bberg = msg.data
+
+    # ROSbot callback function for collecting possible headings calc'd by lidar
+    def callback_lidar(self, msg, args):
+        self.lidar = msg.data
+
+        # print out data (FOR DEBUGGING!)
+        for i in self.lidar:
+            print("{:.2f}, ".format(i), end="", flush=True)
+        print("")
 
     # ROSbot callback function for updating elapsed runtime
     def callback_runtime(self, msg, args):
@@ -81,7 +92,8 @@ class SubscriberThread(threading.Thread):
     def run(self):
         # create subscriber node with callback function
         self.sub = rospy.Subscriber('/cmd_setup', String, self.callback_setup, ())
-        self.sub = rospy.Subscriber('/heading/bberg', Float64, self.callback_heading, ())
+        self.sub = rospy.Subscriber('/heading/bberg', Float64, self.callback_bberg, ())
+        self.sub = rospy.Subscriber('/heading/lidar', Float64MultiArray, self.callback_lidar, ())
         self.sub = rospy.Subscriber('/results/elapsed_time', Duration, self.callback_runtime, ())
         self.sub = rospy.Subscriber('/results/total_dist', Float64, self.callback_total_dist, ())
         rospy.spin()
@@ -122,10 +134,10 @@ if __name__=="__main__":
         
         while(1):
             # check teleop_twist_ROSbot current command
-            curr_status, curr_heading, curr_runtime = sub_thread.get_data()
+            curr_status, curr_bberg, curr_runtime = sub_thread.get_data()
 
             if curr_status != "stop":
-                pub_thread.update(1,0,0,curr_heading, speed, turn)
+                pub_thread.update(1,0,0,curr_bberg, speed, turn)
 
             rospy.sleep(0.05)
 
