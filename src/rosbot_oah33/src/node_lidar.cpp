@@ -2,7 +2,6 @@
 #include <std_msgs/String.h>
 #include <std_msgs/Float64MultiArray.h>
 #include <sensor_msgs/LaserScan.h>
-//#include <geometry_msgs/Vector3.h>
 #include<cmath>
 #include<iostream>
 #include <vector>
@@ -11,16 +10,6 @@ ros::Publisher lidar_array;
 
 std_msgs::Float64MultiArray lidar_FMA;
 std::string state;
-
-//geometry_msgs::Vector3 pose;
-
-/* read the rpy roll, pitch, yaw values [deg]
-void callback_rpy(const geometry_msgs::Vector3 &msg)
-{
-    // update pose values
-    pose = msg;
-}
-*/
 
 /* callback for scan data */
 void callback_scan(const sensor_msgs::LaserScan &msg){
@@ -35,14 +24,14 @@ void callback_scan(const sensor_msgs::LaserScan &msg){
         float angle_range = msg.angle_increment * sample_num;
 
         // how many segments should the lidar be broken into
-        int parts = 12; // EVEN NUMBERS ONLY
+        int parts = 10; // EVEN NUMBERS ONLY
 
         // how many samples per part (last segment may have less than the rest)
         int remainder = sample_num % parts;
         int samples_per_part = (sample_num - remainder) / parts;
         
         // minimumm acceptable range of obstacles [m]
-        float min_obj_range = .8;
+        float min_obj_range = .7;
 
         // make array of lidar headings 
         float lidar_headings[parts] = {};
@@ -126,7 +115,6 @@ int main(int argc, char **argv)
     // subscriptions
     ros::Subscriber time = n.subscribe("/scan", 720, callback_scan);
     ros::Subscriber setup = n.subscribe("/cmd_setup", 1, callback_setup);
-    //ros::Subscriber pose_rpy = n.subscribe("/rpy", 1, callback_rpy);
 
     // publishers
     lidar_array = n.advertise<std_msgs::Float64MultiArray>("/heading/lidar", 10);

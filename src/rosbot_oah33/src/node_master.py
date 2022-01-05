@@ -134,14 +134,66 @@ if __name__=="__main__":
         while(1):
             # check teleop_twist_ROSbot current command
             curr_status, curr_bberg, curr_lidar, curr_runtime = sub_thread.get_data()
-
+            
             # main heading selection
             if curr_status != "stop":
 
+                arr = []; count = 0
+                for el in curr_lidar:
+                    # find abs distances from available lidar headings to start heading
+                    if el != -999.:
+                        arr.append(el) 
+                    else:
+                        count += 1
+                        arr.append(999)
+
+                # choose first heading that is not blocked with something (i.e. !999)
+                ind = next((el for el, i in enumerate(arr) if i!=999))
+                
+                # neither sensor detects, adjust heading to init
+                if count <= 0 and curr_bberg[0] == 0.:
+                    print('--> NEITHER')
+                    desired_heading = curr_bberg[2]
+                
+                # bberg detects something, lidar doesn't
+                elif count <= 0 and curr_bberg[0] == 1.:
+                    print('---> BBERG')
+                    desired_heading = curr_bberg[2]
+                
+                # lidar detects something, bberg doesn't
+                elif count > 0 and curr_bberg[0] == 0.:
+                    print('---> LIDAR')
+                    desired_heading = arr[ind]
+
+                # both sensors have detections
+                else:
+                    # check if lidar detects obstacle ahead (front three)
+                    # if no, use bberg's suggestion...
+                    if ind != 0 and ind != 1 and ind != (len(arr)-1):
+                        print('----> BOTH: BBERG')
+                        desired_heading = curr_bberg[2]
+                    # else use lidar suggestion...
+                    else:
+                        print('----> BOTH: LIDAR')
+                        desired_heading = arr[ind]
+
+                
+                # print out data (FOR DEBUGGING!)
                 for i in curr_lidar:
-                    print("{:.2f}| ".format(i), end="", flush=True)
+                    print("{:.2f}".format(-i), end="", flush=True)
+                    if i == desired_heading:
+                        print("!| ", end="", flush=True)
+                    else:
+                        print("| ", end="", flush=True)
                 print("")
 
+                # print out data (FOR DEBUGGING!)
+                for i in arr:
+                    print("{:.2f}| ".format(i), end="", flush=True)
+                print("BBERG: {}\n".format(curr_bberg[2]))
+
+                
+                """
                 #[trig, init, prop]
                 if curr_bberg[0] != 1.: # i.e. not detecting obstacle
                     arr = []; count = 0
@@ -164,7 +216,7 @@ if __name__=="__main__":
                 else:
                     # there is an obstacle detected by proxy sensors, avoid it/ them!
                     desired_heading = curr_bberg[2] # using proposed heading
-
+                """
 
                 '''
                 # print out data (FOR DEBUGGING!)
