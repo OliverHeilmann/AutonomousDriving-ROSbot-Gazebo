@@ -7,6 +7,9 @@
 
 ----- CONTACT DETAILS ------
 
+--------- TO DO ------------
+1) Dithering caused by proxy having priority, then lidar says move right, proxy says move left 
+    on the large bin (due to wheels only being detected by proxy etc.)
 """
 
 from __future__ import print_function
@@ -37,14 +40,14 @@ class SubscriberThread(threading.Thread):
         self.pub_thread = pub_thread
         self.sub = None
         self.status = "stop"
-        self.bberg = 0.
+        self.bberg = []
         self.lidar = []
         self.runtime = rospy.Duration.from_sec(0)
         self.total_dist = 0
 
     # return current status, heading and time when function called
     def get_data(self):
-        return self.status, self.bberg, self.runtime.to_sec # convert to seconds format before passing
+        return self.status, self.bberg, self.lidar, self.runtime.to_sec # convert to seconds format before passing
 
     # ROSbot callback function for updating current status
     def callback_setup(self, msg, args):
@@ -62,16 +65,12 @@ class SubscriberThread(threading.Thread):
 
     # ROSbot callback function for updating heading (from braitenberg forward proxy pair)
     def callback_bberg(self, msg, args):
+        # output message as [triggered?, initial heading, proposed heading now]
         self.bberg = msg.data
 
     # ROSbot callback function for collecting possible headings calc'd by lidar
     def callback_lidar(self, msg, args):
         self.lidar = msg.data
-
-        # print out data (FOR DEBUGGING!)
-        for i in self.lidar:
-            print("{:.2f}, ".format(i), end="", flush=True)
-        print("")
 
     # ROSbot callback function for updating elapsed runtime
     def callback_runtime(self, msg, args):
@@ -92,7 +91,7 @@ class SubscriberThread(threading.Thread):
     def run(self):
         # create subscriber node with callback function
         self.sub = rospy.Subscriber('/cmd_setup', String, self.callback_setup, ())
-        self.sub = rospy.Subscriber('/heading/bberg', Float64, self.callback_bberg, ())
+        self.sub = rospy.Subscriber('/heading/bberg', Float64MultiArray, self.callback_bberg, ())
         self.sub = rospy.Subscriber('/heading/lidar', Float64MultiArray, self.callback_lidar, ())
         self.sub = rospy.Subscriber('/results/elapsed_time', Duration, self.callback_runtime, ())
         self.sub = rospy.Subscriber('/results/total_dist', Float64, self.callback_total_dist, ())
@@ -134,10 +133,55 @@ if __name__=="__main__":
         
         while(1):
             # check teleop_twist_ROSbot current command
-            curr_status, curr_bberg, curr_runtime = sub_thread.get_data()
+            curr_status, curr_bberg, curr_lidar, curr_runtime = sub_thread.get_data()
 
+            # main heading selection
             if curr_status != "stop":
-                pub_thread.update(1,0,0,curr_bberg, speed, turn)
+
+                for i in curr_lidar:
+                    print("{:.2f}| ".format(i), end="", flush=True)
+                print("")
+
+                #[trig, init, prop]
+                if curr_bberg[0] != 1.: # i.e. not detecting obstacle
+                    arr = []; count = 0
+                    for el in curr_lidar:
+                        # find abs distances from available lidar headings to start heading
+                        if el != -999.:
+                            arr.append(abs(curr_bberg[1] - el))
+                        else:
+                            count += 1
+                            arr.append(999)
+
+                     # check if any obstacles were detected, if not, set heading == initial heading
+                    if count <= 0 and curr_bberg[0] == 0.:
+                        desired_heading = curr_lidar[arr.index(min(arr))]
+                        #desired_heading = curr_bberg[1]
+                    else:
+                        # get index of smallest delta to initial heading, bust available route
+                        desired_heading = curr_lidar[arr.index(min(arr))]
+                        
+                else:
+                    # there is an obstacle detected by proxy sensors, avoid it/ them!
+                    desired_heading = curr_bberg[2] # using proposed heading
+
+
+                '''
+                # print out data (FOR DEBUGGING!)
+                for i in curr_lidar:
+                    print("{:.2f}".format(i), end="", flush=True)
+                    if i == desired_heading:
+                        print("!| ", end="", flush=True)
+                    else:
+                        print("| ", end="", flush=True)
+                print("")
+
+                for i in deltas:
+                    print("{:.2f}, ".format(i), end="", flush=True)
+                print("\n")
+                '''
+
+                pub_thread.update(1,0,0,desired_heading, speed, turn)
 
             rospy.sleep(0.05)
 
