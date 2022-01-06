@@ -176,10 +176,7 @@ if __name__=="__main__":
                         print('----> BOTH: LIDAR')
                         #desired_heading = curr_lidar[arr.index(min(arr))]
                         desired_heading = arr[ind]
-
-
-                print("Speed: {:.3f}".format(curr_lidar[-1]))
-
+                        
                 """
                 # print out data (FOR DEBUGGING!)
                 for i in curr_lidar:
