@@ -11,6 +11,26 @@ ros::Publisher lidar_array;
 std_msgs::Float64MultiArray lidar_FMA;
 std::string state;
 
+/* Calculate next speed step size */
+float var_speed(float curr_dist, float max_dist, float max_speed, float min_speed)
+{
+    // if current measurement is > than sensor max range, set curr to max
+    if (curr_dist > max_dist){curr_dist = max_dist;}
+
+    // control loop to find speed based on measured distance to object
+    float speed = max_speed + - ((max_speed - min_speed) * (abs(curr_dist - max_dist) / max_dist));
+
+    /*
+    std::cout << std::to_string(curr_dist) << " | " 
+                << std::to_string(max_dist) << " | "
+                << std::to_string(max_speed) << " | "
+                << std::to_string(min_speed) << " | "
+                << std::to_string(speed) << " | "
+                << std::endl;
+    */
+    return speed;
+}
+
 /* callback for scan data */
 void callback_scan(const sensor_msgs::LaserScan &msg){
 
@@ -31,18 +51,24 @@ void callback_scan(const sensor_msgs::LaserScan &msg){
         int samples_per_part = (sample_num - remainder) / parts;
         
         // minimumm acceptable range of obstacles [m]
-        float min_obj_range = .7;
+        float min_obj_range = .8;
 
         // make array of lidar headings 
         float lidar_headings[parts] = {};
         int lidar_movables[parts] = {};
         int step = -1;
         float el;
+        float speed = 0.5; // set random speed to start
 
         int count = 0;
 
         for (int i = 0; i < sample_num; i++)
         {
+            if (i == 0)
+            {
+                speed = var_speed(msg.ranges[i], msg.range_max, 1., 0.2);
+            }
+
             // check if current i is the first or middle of a part, add heading if middle
             if ( i % samples_per_part == 0) { step++; }
             else if  (i % (samples_per_part / 2) == 0)
@@ -76,7 +102,7 @@ void callback_scan(const sensor_msgs::LaserScan &msg){
                 // correct for shortest path to achieve desired heading
                 if (lidar_headings[i] < -M_PI)
                 {
-                    lidar_headings[i] = lidar_headings[i] + 2*M_PI;
+                    lidar_headings[i] += 2*M_PI;
                 }
 
             } else {lidar_headings[i] = 999.;}
@@ -85,9 +111,12 @@ void callback_scan(const sensor_msgs::LaserScan &msg){
             lidar_FMA.data.push_back(-lidar_headings[i]); // -ve to flip coords for ROSbot config
 
             // print out headings to console in radians (-999 for bad paths)
-            std::cout << std::fixed << std::setprecision(2) << (lidar_headings[i]) << ", ";
+            //std::cout << std::fixed << std::setprecision(2) << (lidar_headings[i]) << ", ";
         }
-        std::cout << "\n";
+        //std::cout << "\n";
+
+        // add suggested speed
+        lidar_FMA.data.push_back(speed);
 
         // publish message
         lidar_array.publish(lidar_FMA);
@@ -99,11 +128,6 @@ void callback_setup(const std_msgs::String &msg)
 {
     // update pose values
     state = msg.data;
-
-    if (state == "start")
-    {
-
-    }
 }
 
 /* main sub and pub setup */

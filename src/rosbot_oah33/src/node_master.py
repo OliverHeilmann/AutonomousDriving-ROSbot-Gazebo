@@ -7,9 +7,6 @@
 
 ----- CONTACT DETAILS ------
 
---------- TO DO ------------
-1) Dithering caused by proxy having priority, then lidar says move right, proxy says move left 
-    on the large bin (due to wheels only being detected by proxy etc.)
 """
 
 from __future__ import print_function
@@ -139,10 +136,11 @@ if __name__=="__main__":
             if curr_status != "stop":
 
                 arr = []; count = 0
-                for el in curr_lidar:
+                for el in curr_lidar[:-1]:
                     # find abs distances from available lidar headings to start heading
                     if el != -999.:
-                        arr.append(el) 
+                        arr.append(el)
+                        #arr.append(abs(curr_bberg[1] - el))
                     else:
                         count += 1
                         arr.append(999)
@@ -163,6 +161,7 @@ if __name__=="__main__":
                 # lidar detects something, bberg doesn't
                 elif count > 0 and curr_bberg[0] == 0.:
                     print('---> LIDAR')
+                    #desired_heading = curr_lidar[arr.index(min(arr))]
                     desired_heading = arr[ind]
 
                 # both sensors have detections
@@ -175,9 +174,13 @@ if __name__=="__main__":
                     # else use lidar suggestion...
                     else:
                         print('----> BOTH: LIDAR')
+                        #desired_heading = curr_lidar[arr.index(min(arr))]
                         desired_heading = arr[ind]
 
-                
+
+                print("Speed: {:.3f}".format(curr_lidar[-1]))
+
+                """
                 # print out data (FOR DEBUGGING!)
                 for i in curr_lidar:
                     print("{:.2f}".format(-i), end="", flush=True)
@@ -191,49 +194,9 @@ if __name__=="__main__":
                 for i in arr:
                     print("{:.2f}| ".format(i), end="", flush=True)
                 print("BBERG: {}\n".format(curr_bberg[2]))
-
-                
-                """
-                #[trig, init, prop]
-                if curr_bberg[0] != 1.: # i.e. not detecting obstacle
-                    arr = []; count = 0
-                    for el in curr_lidar:
-                        # find abs distances from available lidar headings to start heading
-                        if el != -999.:
-                            arr.append(abs(curr_bberg[1] - el))
-                        else:
-                            count += 1
-                            arr.append(999)
-
-                     # check if any obstacles were detected, if not, set heading == initial heading
-                    if count <= 0 and curr_bberg[0] == 0.:
-                        desired_heading = curr_lidar[arr.index(min(arr))]
-                        #desired_heading = curr_bberg[1]
-                    else:
-                        # get index of smallest delta to initial heading, bust available route
-                        desired_heading = curr_lidar[arr.index(min(arr))]
-                        
-                else:
-                    # there is an obstacle detected by proxy sensors, avoid it/ them!
-                    desired_heading = curr_bberg[2] # using proposed heading
                 """
 
-                '''
-                # print out data (FOR DEBUGGING!)
-                for i in curr_lidar:
-                    print("{:.2f}".format(i), end="", flush=True)
-                    if i == desired_heading:
-                        print("!| ", end="", flush=True)
-                    else:
-                        print("| ", end="", flush=True)
-                print("")
-
-                for i in deltas:
-                    print("{:.2f}, ".format(i), end="", flush=True)
-                print("\n")
-                '''
-
-                pub_thread.update(1,0,0,desired_heading, speed, turn)
+                pub_thread.update(1,0,0,desired_heading, curr_lidar[-1], turn)
 
             rospy.sleep(0.05)
 

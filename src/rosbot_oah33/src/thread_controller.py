@@ -81,7 +81,7 @@ class PublishThread(threading.Thread):
             self.condition.wait(self.timeout)
 
             # Copy state into twist message.
-            twist.linear.x = self.x * self.speed * 0.5
+            twist.linear.x = self.x * self.speed
             twist.linear.y = self.y * self.speed
             twist.linear.z = self.z * self.speed
             twist.angular.x = 0

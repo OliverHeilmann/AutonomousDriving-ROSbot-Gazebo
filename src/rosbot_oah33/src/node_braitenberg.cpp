@@ -22,7 +22,7 @@ float range_fr_min;
 
 geometry_msgs::Vector3 pose;
 
-float trip_thresh = 0.8; // larger means avoidance measures will happen closer to when sensor reads its max range (deals with sensor noise)
+float trip_thresh = 0.95; // larger means avoidance measures will happen closer to when sensor reads its max range (deals with sensor noise)
 float return_to_fwd = 0.7; // larger weight is faster return to forward direction
 float bberg_weight = 90; // weight for bberg sensor componenet [this says max movement is 90 deg]
 std_msgs::Float64 dTheta_yaw;
@@ -152,7 +152,7 @@ void callback_rpy(const geometry_msgs::Vector3 &msg)
 
         // add proposed yaw angle to ROS message vector
         bberg_FMA.data.push_back(dTheta_yaw.data);
-        
+
         // output message as [triggered?, initial heading, proposed heading now]
         explore_pub.publish(bberg_FMA);
     }
