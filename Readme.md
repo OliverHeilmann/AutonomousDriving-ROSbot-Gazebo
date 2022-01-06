@@ -1,8 +1,7 @@
 # Development Content
 ## Commands
 1) rosrun rosbot_bath run_rosbot.sh
-2) rosrun rosbot_oah33 run_teleop_twist.sh
-3) rosrun rosbot_oah33 run_master.sh
+2) rosrun rosbot_oah33 run_all.sh
 ------------------------------------------------------------------------
 ------------------------------------------------------------------------
 ------------------------------------------------------------------------
