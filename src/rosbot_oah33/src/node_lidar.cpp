@@ -51,7 +51,7 @@ void callback_scan(const sensor_msgs::LaserScan &msg){
         int samples_per_part = (sample_num - remainder) / parts;
         
         // minimumm acceptable range of obstacles [m]
-        float min_obj_range = .8;
+        float min_obj_range = .9; //.8
 
         // make array of lidar headings 
         float lidar_headings[parts] = {};
@@ -66,7 +66,7 @@ void callback_scan(const sensor_msgs::LaserScan &msg){
         {
             if (i == 0)
             {
-                speed = var_speed(msg.ranges[i], msg.range_max, 1., 0.2);
+                speed = var_speed(msg.ranges[i], msg.range_max, .8, 0.2);
             }
 
             // check if current i is the first or middle of a part, add heading if middle

@@ -11,7 +11,7 @@
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
   <node name="imu_controller_node" pkg="rosbot_bath" type="imu_controller_node"/>
 
-  <arg name="world" default="$(find rosbot_bath)/worlds/2021_assessment.world"/> <!--2020_aessessment_example.world-->
+  <arg name="world" default="$(find rosbot_bath)/worlds/2021_assessment.world"/> <!--2020_assessment_example.world-->
   <arg name="paused" default="false"/>
   <arg name="use_sim_time" default="true"/>
   <arg name="gui" default="true"/>

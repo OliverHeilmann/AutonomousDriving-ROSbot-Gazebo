@@ -140,13 +140,18 @@ if __name__=="__main__":
                     # find abs distances from available lidar headings to start heading
                     if el != -999.:
                         arr.append(el)
-                        #arr.append(abs(curr_bberg[1] - el))
                     else:
                         count += 1
                         arr.append(999)
 
                 # choose first heading that is not blocked with something (i.e. !999)
                 ind = next((el for el, i in enumerate(arr) if i!=999))
+
+                # number of clear paths on the left
+                clear_left = [i for i in arr if i!=999 and i < 0]
+
+                # number of clear paths on the right
+                clear_right = [i for i in arr if i!=999 and i >= 0]
                 
                 # neither sensor detects, adjust heading to init
                 if count <= 0 and curr_bberg[0] == 0.:
@@ -161,8 +166,14 @@ if __name__=="__main__":
                 # lidar detects something, bberg doesn't
                 elif count > 0 and curr_bberg[0] == 0.:
                     print('---> LIDAR')
-                    #desired_heading = curr_lidar[arr.index(min(arr))]
                     desired_heading = arr[ind]
+
+                    '''
+                    if len(clear_left) > len(clear_right):
+                        desired_heading = max(clear_left)
+                    else:
+                        desired_heading = min(clear_right)
+                    '''
 
                 # both sensors have detections
                 else:
@@ -174,24 +185,12 @@ if __name__=="__main__":
                     # else use lidar suggestion...
                     else:
                         print('----> BOTH: LIDAR')
-                        #desired_heading = curr_lidar[arr.index(min(arr))]
-                        desired_heading = arr[ind]
-                        
-                """
-                # print out data (FOR DEBUGGING!)
-                for i in curr_lidar:
-                    print("{:.2f}".format(-i), end="", flush=True)
-                    if i == desired_heading:
-                        print("!| ", end="", flush=True)
-                    else:
-                        print("| ", end="", flush=True)
-                print("")
+                        #desired_heading = arr[ind]
 
-                # print out data (FOR DEBUGGING!)
-                for i in arr:
-                    print("{:.2f}| ".format(i), end="", flush=True)
-                print("BBERG: {}\n".format(curr_bberg[2]))
-                """
+                        if len(clear_left) > len(clear_right):
+                            desired_heading = max(clear_left)
+                        else:
+                            desired_heading = min(clear_right)
 
                 pub_thread.update(1,0,0,desired_heading, curr_lidar[-1], turn)
 
@@ -203,3 +202,19 @@ if __name__=="__main__":
     finally:
         pub_thread.stop()
         sub_thread.stop()
+
+"""
+# print out data (FOR DEBUGGING!)
+for i in curr_lidar:
+    print("{:.2f}".format(-i), end="", flush=True)
+    if i == desired_heading:
+        print("!| ", end="", flush=True)
+    else:
+        print("| ", end="", flush=True)
+print("")
+
+# print out data (FOR DEBUGGING!)
+for i in arr:
+    print("{:.2f}| ".format(i), end="", flush=True)
+print("BBERG: {}\n".format(curr_bberg[2]))
+"""
