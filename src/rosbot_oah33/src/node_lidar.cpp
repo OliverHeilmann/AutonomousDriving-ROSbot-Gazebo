@@ -104,6 +104,10 @@ void callback_scan(const sensor_msgs::LaserScan &msg){
                 {
                     lidar_headings[i] += 2*M_PI;
                 }
+                else if (lidar_headings[i] > M_PI)
+                {
+                    lidar_headings[i] -= 2*M_PI;
+                }
 
             } else {lidar_headings[i] = 999.;}
 

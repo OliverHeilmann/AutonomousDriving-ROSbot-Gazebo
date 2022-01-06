@@ -149,6 +149,10 @@ void callback_rpy(const geometry_msgs::Vector3 &msg)
         {
             dTheta_yaw.data -= 2*M_PI;
         }
+        else if (dTheta_yaw.data < -M_PI)
+        {
+            dTheta_yaw.data += 2*M_PI;
+        }
 
         // add proposed yaw angle to ROS message vector
         bberg_FMA.data.push_back(dTheta_yaw.data);
