@@ -20,14 +20,6 @@ float var_speed(float curr_dist, float max_dist, float max_speed, float min_spee
     // control loop to find speed based on measured distance to object
     float speed = max_speed + - ((max_speed - min_speed) * (abs(curr_dist - max_dist) / max_dist));
 
-    /*
-    std::cout << std::to_string(curr_dist) << " | " 
-                << std::to_string(max_dist) << " | "
-                << std::to_string(max_speed) << " | "
-                << std::to_string(min_speed) << " | "
-                << std::to_string(speed) << " | "
-                << std::endl;
-    */
     return speed;
 }
 
@@ -113,11 +105,7 @@ void callback_scan(const sensor_msgs::LaserScan &msg){
 
             // add el to ROS message vector
             lidar_FMA.data.push_back(-lidar_headings[i]); // -ve to flip coords for ROSbot config
-
-            // print out headings to console in radians (-999 for bad paths)
-            //std::cout << std::fixed << std::setprecision(2) << (lidar_headings[i]) << ", ";
         }
-        //std::cout << "\n";
 
         // add suggested speed
         lidar_FMA.data.push_back(speed);

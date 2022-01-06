@@ -168,13 +168,6 @@ if __name__=="__main__":
                     print('---> LIDAR')
                     desired_heading = arr[ind]
 
-                    '''
-                    if len(clear_left) > len(clear_right):
-                        desired_heading = max(clear_left)
-                    else:
-                        desired_heading = min(clear_right)
-                    '''
-
                 # both sensors have detections
                 else:
                     # check if lidar detects obstacle ahead (front three)
@@ -202,19 +195,3 @@ if __name__=="__main__":
     finally:
         pub_thread.stop()
         sub_thread.stop()
-
-"""
-# print out data (FOR DEBUGGING!)
-for i in curr_lidar:
-    print("{:.2f}".format(-i), end="", flush=True)
-    if i == desired_heading:
-        print("!| ", end="", flush=True)
-    else:
-        print("| ", end="", flush=True)
-print("")
-
-# print out data (FOR DEBUGGING!)
-for i in arr:
-    print("{:.2f}| ".format(i), end="", flush=True)
-print("BBERG: {}\n".format(curr_bberg[2]))
-"""

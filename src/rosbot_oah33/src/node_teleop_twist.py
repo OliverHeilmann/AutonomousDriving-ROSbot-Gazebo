@@ -219,8 +219,6 @@ if __name__=="__main__":
             elif key in setupBindings.keys():
                 print("[INFO]: {0}".format(setupBindings[key]))
                 pub_thread.setup(setupBindings[key])
-                #moveBindings["o"] = (moveBindings["o"][0],moveBindings["o"][1],moveBindings["o"][2],moveBindings["o"][3]+0.05) #change movement angle example
-                #th = moveBindings["o"][3]
             else:
                 # Skip updating cmd_vel if key timeout and robot already
                 # stopped.
