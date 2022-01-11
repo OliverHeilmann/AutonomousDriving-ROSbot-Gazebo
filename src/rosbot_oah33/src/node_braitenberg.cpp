@@ -88,7 +88,7 @@ void callback_rpy(const geometry_msgs::Vector3 &msg)
             start_trigger = false;
         }
 
-        // proxy sensors will read 0.9 when nothing is ahead, make sure we aren't avoiding nothing by
+        // proxy sensors will read 0.9m when nothing is ahead, make sure we aren't avoiding nothing by
         // checking that current range is less than max val on either sensor... 
         if (range_fl < (trip_thresh * range_fl_max) && range_fr < (trip_thresh * range_fr_max) ) // both sensors firing!
         {
@@ -130,7 +130,7 @@ void callback_rpy(const geometry_msgs::Vector3 &msg)
         {
             dTheta_yaw.data = return_to_fwd * (pose.z - yaw_start);
 
-            // add "obstacle" to ROS message vector
+            // add "no obstacle" to ROS message vector
             bberg_FMA.data.push_back(0.);
         }
 

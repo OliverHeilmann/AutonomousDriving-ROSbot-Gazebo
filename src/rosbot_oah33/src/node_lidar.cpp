@@ -54,14 +54,18 @@ void callback_scan(const sensor_msgs::LaserScan &msg){
 
         int count = 0;
 
+        // loop through all lidar samples in the recieved message vector data
         for (int i = 0; i < sample_num; i++)
         {
+            // calculate the next speed value for ROSbot based on distance to next
+            // object ahead...
             if (i == 0)
             {
                 speed = var_speed(msg.ranges[i], msg.range_max, .8, 0.2);
             }
 
-            // check if current i is the first or middle of a part, add heading if middle
+            // check if current i is the first or middle of a part, add heading to 
+            // array if i is at the middle of the part.
             if ( i % samples_per_part == 0) { step++; }
             else if  (i % (samples_per_part / 2) == 0)
             {

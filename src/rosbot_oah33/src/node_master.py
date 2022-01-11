@@ -44,7 +44,7 @@ class SubscriberThread(threading.Thread):
 
     # return current status, heading and time when function called
     def get_data(self):
-        return self.status, self.bberg, self.lidar, self.runtime.to_sec # convert to seconds format before passing
+        return self.status, self.bberg, self.lidar, self.runtime.to_sec # convert to seconds
 
     # ROSbot callback function for updating current status
     def callback_setup(self, msg, args):
@@ -81,7 +81,7 @@ class SubscriberThread(threading.Thread):
     
     def stop(self):
         print("SubscriberThread stopping...")
-        self.sub.unregister() # unregister to subscription eleganty (must have access to sub i.e. see init self.sub)
+        self.sub.unregister() # unregister to subscription eleganty
         self.join()
         rospy.signal_shutdown(None)
 

@@ -19,7 +19,7 @@ bool isFirst = true;
 std::string state;
 
 /* Distance between two points */
-float dist2points(float x0, float y0, float x1, float y1){
+float points2dist(float x0, float y0, float x1, float y1){
     return pow( pow(x1 - x0, 2) + pow(y1 - y0, 2), 0.5 );
 }
 
@@ -41,7 +41,7 @@ void callback_pos(const nav_msgs::Odometry &msg)
         pY1 = msg.pose.pose.position.y;
 
         // get distance, add to total for new total distance
-        total_dist.data += dist2points( pX0, pY0, pX1, pY1 );
+        total_dist.data += points2dist( pX0, pY0, pX1, pY1 );
 
     } else {isFirst = false;}
 
