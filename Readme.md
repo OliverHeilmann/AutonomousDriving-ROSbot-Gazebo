@@ -1,16 +1,38 @@
-# Development Content
-## Commands
+# Description
+This repository contains the implementation of the ROSbot reactive planner. Code is written using Python, C++ and ROS. Later stages of this repository describe, in detail, how to rebuild the environment which was used for testing the system. For performance evaluation, the Gazebo simulator environment was used. The goal of this project was to autonomously drive from starting line, to finishing, as fast as possible.
+
+_Click to watch!_
+[![Watch the video](/imgs/still.png)](https://www.youtube.com/watch?v=iZE5kW37VIg)
+
+# Highlights
+Reactive planner design illustration. Specifically, this is a finite state machine model.
+![](/imgs/planner.png "reactive planner")
+
+Sensor data points outlined in RVis. Lidar data represented as yellow points and infra-red, as grey cones (two front and two rear).
+![](/imgs/sensors.png "sensors")
+
+Discretisation of Lidar data method illustrated below.
+![](/imgs/lidar.png "Lidar Approach")
+
+Examples of dithering presented below (where ROSbot gets stuck moving between two points).
+![](/imgs/objectavoidance.png "object avoidance")
+
+Examples of four routes which the ROSbot would take (those of which varied based on the starting position of the ROSbot).
+![](/imgs/routes1.png "routes1")
+![](/imgs/routes2.png "routes2")
+
+
+# Start Commands
 1) rosrun rosbot_bath run_rosbot.sh
 2) rosrun rosbot_oah33 run_all.sh
-------------------------------------------------------------------------
-------------------------------------------------------------------------
-------------------------------------------------------------------------
 
-# Description
-This repository contains all the relevant configurations which a user will need for successfully setting up ROS, C++ and Python (with debugging) on Visual Studio Code. VS Code provides users with debugging and syntax suggestions/ support as well as github and ROS environment making it a powerful and effective tool for robotics software development.
+
+------------------------------------------------------------------------
+------------------------------------------------------------------------
+------------------------------------------------------------------------
 
 # Prerequisite Installs and Setup
-Before going throught the VS Code configuration steps, the user should install the following versions of the below (or similar, read documentation if unclear).
+This repository contains all the relevant configurations which a user will need for successfully setting up ROS, C++ and Python (with debugging) on Visual Studio Code. VS Code provides users with debugging and syntax suggestions/ support as well as github and ROS environment making it a powerful and effective tool for robotics software development. Before going throught the VS Code configuration steps, the user should install the following versions of the below (or similar, read documentation if unclear).
 
 ## Versions
 1) ROS Noetic (see 'Setting Up Ubuntu and ROS')
