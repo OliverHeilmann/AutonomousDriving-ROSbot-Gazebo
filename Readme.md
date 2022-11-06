@@ -61,8 +61,11 @@ Follow these tutorials:
 Follow this tutorial:
 1) http://wiki.ros.org/noetic/Installation/Ubuntu
 2) Run the following commands
-```text 
-# add to bashrc to add workspace to source
+```sh 
+# Navigate to your ros workspace with src folder first
+catkin_make
+
+# add to bashrc to add ros workspace to source
 sudo nano ~/.bashrc
 
 # add the below to the bottom of your bashrc
