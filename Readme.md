@@ -73,7 +73,7 @@ source <PATH TO YOUR ROS WORKSPACE>/devel/setup.bash
 ```
 
 Now install the following packages:
-```text
+```sh
 sudo apt-get update
 
 # Install Additional ROS Packages
@@ -90,6 +90,16 @@ sudo apt-get install python3-catkin-tools
 
 # reminder that the below is the command to source to workspace
 source <PATH TO YOUR ROS WORKSPACE>/devel/setup.bash
+```
+
+If any errors appear when running the `Start Commands` listed above, there might be an issue with the python linking (python vs python3). To fix this issue, do the following:
+
+```sh
+# get the path to python3
+whereis python3
+
+# use the presented path to link it with python
+sudo ln -s /usr/bin/python3 /usr/bin/python
 ```
 
 __IMPORTANT!!__ Note that your ROS workspace (where you call the source command to) is the directory which you should open in VS Code. For example, my workspace is called '_ros_workspace_' so I use the command 'source ros_workspace/devel/setup.bash' to point ROS to my 'setup.bash' file. Note that this file will not be visible until you build the directory yourself using _catkin_init_workspace_ and _catkin_make_.
