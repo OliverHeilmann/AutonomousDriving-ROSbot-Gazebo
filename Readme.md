@@ -77,9 +77,7 @@ Now install the following packages:
 sudo apt-get update
 
 # Install Additional ROS Packages
-sudo apt-get install -y ros-noetic-slam-gmapping ros-noetic-
-controller-manager ros-noetic-joint-state-controller ros-noetic-
-gazebo-ros*
+sudo apt-get install -y ros-noetic-slam-gmapping ros-noetic-controller-manager ros-noetic-joint-state-controller ros-noetic-gazebo-ros*
 
 # monitoring keyboard package
 sudo apt install ros-noetic-teleop-twist-keyboard
